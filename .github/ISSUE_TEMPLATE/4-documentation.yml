@@ -1,0 +1,62 @@
+name: Specification or documentation change
+description: Correct, clarify, or extend a specification document (the spec-first entry point)
+title: "[Spec] <document>: <short description>"
+labels: ["type: spec"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use this for anything that changes repository documents: spec corrections, gaps found
+        during implementation, TODO(verify) resolutions, and MASTER_CONTEXT updates.
+        Rules that always apply (docs/SPEC_CONVENTIONS.md): confidence tiers are never upgraded
+        without new evidence; IDs are never renumbered; no em dashes; unknown facts become
+        TODO(verify) entries, never assumptions.
+  - type: input
+    id: document
+    attributes:
+      label: Document and section
+      placeholder: "ai/RAG_PIPELINE.md section 4.3"
+    validations:
+      required: true
+  - type: dropdown
+    id: change-type
+    attributes:
+      label: Change type
+      options:
+        - Correction (spec is wrong or self-contradictory)
+        - Gap (implementation needs a decision the spec does not make)
+        - TODO(verify) resolution (new evidence attached)
+        - Clarification (meaning unchanged, wording improved)
+        - MASTER_CONTEXT update (new verified facts or tier changes, evidence required)
+    validations:
+      required: true
+  - type: textarea
+    id: current
+    attributes:
+      label: Current text or state
+      description: Quote the relevant passage or describe the gap.
+    validations:
+      required: true
+  - type: textarea
+    id: proposed
+    attributes:
+      label: Proposed change
+      description: "The new text or decision, with rationale. For tier changes, attach the evidence and note that only the owner applies them."
+    validations:
+      required: true
+  - type: textarea
+    id: impact
+    attributes:
+      label: Impact on other documents
+      description: Which cross-references, IDs, requirements, or tasks are affected? (Traceability per QUALITY_ASSURANCE.)
+  - type: checkboxes
+    id: discipline
+    attributes:
+      label: Change discipline
+      options:
+        - label: No confidence tier is upgraded without new evidence attached to this issue
+          required: true
+        - label: No existing ID is renumbered or reused
+          required: true
+        - label: A CHANGELOG entry will accompany the change
+          required: true

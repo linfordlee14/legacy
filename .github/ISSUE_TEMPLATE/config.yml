@@ -1,0 +1,11 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Read CONTRIBUTING first
+    url: https://github.com/linfordlee14/legacy/blob/main/CONTRIBUTING.md
+    about: How this repository works, the spec-first rule, and the review checklist.
+  - name: Specification conventions
+    url: https://github.com/linfordlee14/legacy/blob/main/docs/SPEC_CONVENTIONS.md
+    about: The normative authoring standard every change must follow.
+  - name: Build order and session protocol
+    url: https://github.com/linfordlee14/legacy/blob/main/roadmap/BUILD_ORDER.md
+    about: What to build next and how implementation sessions must work.

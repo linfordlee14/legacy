@@ -1,0 +1,68 @@
+name: Bug report
+description: Behavior that deviates from a specification
+title: "[Bug] <short description>"
+labels: ["type: bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        **Privacy notice (read before pasting anything).** This repository is about deeply
+        personal data. Never paste P2 (Private) or P3 (Sealed) content, real journal text,
+        secrets, tokens, or backup material into an issue. Reference content by entity ID only.
+        Logs are designed to be content-free (OBSERVABILITY spec); if a log line contains
+        private content, that is itself a critical bug: report the fact, not the line.
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened
+      description: Observed behavior, with entity IDs and request IDs where relevant.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior per specification
+      description: Cite the spec section that defines the correct behavior. If no spec covers it, say so; that is a spec gap, not a preference.
+      placeholder: "Per security/AUTHORIZATION.md section 4.4, an above-ceiling item must return not_found."
+    validations:
+      required: true
+  - type: textarea
+    id: repro
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Sign in as ...
+        2. Call GET /v1/... or open screen ...
+        3. Observe ...
+    validations:
+      required: true
+  - type: dropdown
+    id: severity
+    attributes:
+      label: Severity
+      description: Per the defect ladder in testing/QUALITY_ASSURANCE.md.
+      options:
+        - Critical (data loss, tier leak, provenance corruption, auth bypass)
+        - High (core journey broken, no workaround)
+        - Medium (degraded behavior, workaround exists)
+        - Low (cosmetic, copy, minor friction)
+    validations:
+      required: true
+  - type: checkboxes
+    id: invariant-check
+    attributes:
+      label: Invariant involvement
+      description: Critical by definition if either is checked; apply the matching label.
+      options:
+        - label: Content above the caller's privacy ceiling was visible, listed, counted, or exported (tier leak)
+        - label: A self-reported or flagged claim was presented as established fact, or a tier changed without owner action (provenance violation)
+  - type: input
+    id: environment
+    attributes:
+      label: Environment
+      placeholder: "production / staging / dev, browser or client, commit or release"
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Evidence (IDs only, no private content)
+      description: Request IDs, AuditLogEntry IDs, entity IDs, screenshots with private content redacted.

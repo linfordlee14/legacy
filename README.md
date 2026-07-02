@@ -30,6 +30,7 @@ Read in this order:
 9. **Quality and experience:** [`testing/TESTING.md`](testing/TESTING.md) · [`testing/QUALITY_ASSURANCE.md`](testing/QUALITY_ASSURANCE.md) · [`ui/UI_UX.md`](ui/UI_UX.md) · [`ui/DESIGN_SYSTEM.md`](ui/DESIGN_SYSTEM.md) · [`ui/ACCESSIBILITY.md`](ui/ACCESSIBILITY.md)
 10. **Delivery:** [`roadmap/ROADMAP.md`](roadmap/ROADMAP.md) · [`roadmap/TASKS.md`](roadmap/TASKS.md) · [`roadmap/RISKS.md`](roadmap/RISKS.md) · [`roadmap/FUTURE_FEATURES.md`](roadmap/FUTURE_FEATURES.md)
 11. **MVP execution:** [`roadmap/MVP_PLAN.md`](roadmap/MVP_PLAN.md) · [`roadmap/IMPLEMENTATION_TASKS.md`](roadmap/IMPLEMENTATION_TASKS.md) · [`roadmap/BUILD_ORDER.md`](roadmap/BUILD_ORDER.md) (implementation sessions start with BUILD_ORDER's session protocol)
+12. **GitHub delivery:** [`roadmap/GITHUB_MILESTONES.md`](roadmap/GITHUB_MILESTONES.md) (milestones M1 to M9, labels, project board) · issue and PR templates under [`.github/`](.github/)
 
 Repository meta: [`CONTRIBUTING.md`](CONTRIBUTING.md) · [`CHANGELOG.md`](CHANGELOG.md)
 

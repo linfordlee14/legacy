@@ -1,0 +1,95 @@
+name: Implementation task
+description: A spec-anchored engineering task (the default work item for building Legacy)
+title: "[MVP-000 or TASK-000] <short title>"
+labels: ["type: feature"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Before filing: read the session protocol in `roadmap/BUILD_ORDER.md` section 4.1.
+        Tasks are defined in `roadmap/IMPLEMENTATION_TASKS.md` (MVP-###) and `roadmap/TASKS.md` (TASK-###).
+        Implementation follows specifications; if the spec is wrong or incomplete, file a
+        "Specification or documentation change" issue first (spec-first rule).
+  - type: input
+    id: task-id
+    attributes:
+      label: Canonical task ID
+      description: The MVP-### or TASK-### this issue implements. One task per issue.
+      placeholder: "MVP-017"
+    validations:
+      required: true
+  - type: input
+    id: milestone
+    attributes:
+      label: Milestone and build-order step
+      description: Per roadmap/GITHUB_MILESTONES.md and roadmap/BUILD_ORDER.md.
+      placeholder: "M3 – AI Search, step 17"
+    validations:
+      required: true
+  - type: textarea
+    id: spec-sections
+    attributes:
+      label: Specification sections (read first)
+      description: The exact sections that define this work. The PR must cite these.
+      placeholder: |
+        - api/API_SPECIFICATION.md section 4.4 (search endpoints)
+        - ai/RAG_PIPELINE.md query pipeline
+        - specs/NON_FUNCTIONAL_REQUIREMENTS.md NFR-035
+    validations:
+      required: true
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: What is being built, in one to three sentences. No design decisions here; the specs made them.
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance criteria
+      description: Copy or refine the criteria from the task definition. Testable statements only.
+      placeholder: |
+        - Tier-leak suite proves no above-ceiling result, snippet, or count leaks (NFR-035)
+        - NFR-001/NFR-002 latency met on the reference corpus
+    validations:
+      required: true
+  - type: textarea
+    id: dependencies
+    attributes:
+      label: Dependencies
+      description: Task IDs or issues that must land first.
+      placeholder: "MVP-016 (#12)"
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Priority
+      options:
+        - P0 (milestone-blocking)
+        - P1 (should ship)
+        - P2 (stretch)
+    validations:
+      required: true
+  - type: input
+    id: effort
+    attributes:
+      label: Estimated effort
+      description: Focused engineering days, tests included, per the task definition.
+      placeholder: "1.5d"
+  - type: checkboxes
+    id: invariants
+    attributes:
+      label: Invariant impact
+      description: Check any that apply; checked items require the matching label and extra review.
+      options:
+        - label: Touches privacy-tier enforcement (apply "invariant privacy-tiers" label)
+        - label: Touches Claims, Sources, or confidence tiers (apply "invariant provenance" label)
+  - type: checkboxes
+    id: protocol
+    attributes:
+      label: Session protocol
+      options:
+        - label: I have read the spec sections listed above before starting
+          required: true
+        - label: This task requires no design decision outside the specs (otherwise file a spec change first)
+          required: true

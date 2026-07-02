@@ -17,6 +17,17 @@ This file is exempt from the 12-section specification structure per [SPEC_CONVEN
 
 - Nothing yet.
 
+## [0.3.0] - 2026-07-02
+
+GitHub delivery infrastructure.
+
+### Added
+
+- `roadmap/GITHUB_MILESTONES.md`: nine-milestone GitHub strategy (M1 MVP Foundation through M9 Version 1.0) mapped to MVP-### and TASK-### IDs, roadmap phases, and decision gates, with label taxonomy, project board definition, and setup commands.
+- `.github/labels.yml`: machine-readable label definitions (type, priority, domain, invariant, workflow groups) mirroring the SPEC_CONVENTIONS domain codes.
+- `.github/ISSUE_TEMPLATE/`: issue forms for implementation tasks, bug reports (with privacy notice and invariant checks), feature requests (spec-first routed), and specification changes, plus `config.yml` disabling blank issues.
+- `.github/pull_request_template.md`: PR checklist enforcing spec citations, invariant tests, audit and redaction checks, accessibility gates, and CHANGELOG discipline.
+
 ## [0.2.0] - 2026-07-02
 
 MVP implementation planning.

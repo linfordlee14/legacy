@@ -1,0 +1,61 @@
+name: Feature request
+description: Propose new or changed product behavior (routed through the spec-first rule)
+title: "[Feature] <short description>"
+labels: ["type: feature", "needs: owner-decision"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Legacy is specification-driven: features are not implemented from issues, they are
+        implemented from specs. A feature request that is accepted becomes a specification
+        change first (FEATURE_SPECIFICATIONS or FUTURE_FEATURES), then implementation tasks.
+        Check `roadmap/FUTURE_FEATURES.md` before filing; your idea may already exist with
+        a trigger condition.
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem or opportunity
+      description: What real situation does this address? Ground it in usage, not hypotheticals where possible.
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed behavior
+      description: What should the platform do? Note which personas benefit (specs/USER_PERSONAS.md).
+    validations:
+      required: true
+  - type: dropdown
+    id: relationship
+    attributes:
+      label: Relationship to the existing specs
+      options:
+        - Refines an existing feature (cite the FS-### below)
+        - Matches an existing FUTURE_FEATURES candidate (cite the FF-## below)
+        - Genuinely new (proposes a new FUTURE_FEATURES entry)
+    validations:
+      required: true
+  - type: input
+    id: spec-ref
+    attributes:
+      label: Spec reference
+      placeholder: "FS-004, or FF-10, or none"
+  - type: textarea
+    id: tier-provenance
+    attributes:
+      label: Privacy and provenance implications
+      description: Which privacy tiers does this touch? Does it surface claims, and if so how are confidence tiers shown? "None" is a valid answer with a sentence of reasoning.
+    validations:
+      required: true
+  - type: textarea
+    id: trigger
+    attributes:
+      label: Suggested trigger condition
+      description: What must be true before this is worth building? (FUTURE_FEATURES discipline; keeps v1 scope honest, RISK-10.)
+  - type: checkboxes
+    id: acknowledge
+    attributes:
+      label: Process acknowledgment
+      options:
+        - label: I understand this request results in a specification change before any implementation
+          required: true
