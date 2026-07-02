@@ -1,0 +1,9 @@
+# Local environment (DEP-01, DEP-04): the API service as a container, using
+# the versioned non-secret configuration from infra/environments/local.env.
+# The web client runs natively during development: make dev-web.
+services:
+  api:
+    build: services/api
+    env_file: infra/environments/local.env
+    ports:
+      - "8000:8000"

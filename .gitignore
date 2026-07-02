@@ -1,0 +1,23 @@
+# Python
+__pycache__/
+*.pyc
+.venv/
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Node
+node_modules/
+.next/
+out/
+coverage/
+
+# Environment secrets (non-secret config lives in infra/environments/)
+.env
+.env.local
+.env.*.local
+
+# OS and editors
+.DS_Store
+*.swp

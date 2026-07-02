@@ -50,9 +50,13 @@ Personal Knowledge System · Digital Memory · AI Second Brain · AI Digital Twi
 
 Next.js web client · FastAPI backend · Supabase PostgreSQL with pgvector · Anthropic Claude API primary with Gemini and Groq behind a model router · MCP tool integrations · REST `/v1` with SSE streaming. Recorded as ADRs in [`architecture/MASTER_ARCHITECTURE.md`](architecture/MASTER_ARCHITECTURE.md); each anchored to the owner's demonstrated stack in MASTER_CONTEXT §5.
 
+## Implementation workspace
+
+Implementation lives alongside the specifications: [`apps/web`](apps/web) (Next.js client), [`services/api`](services/api) (FastAPI service), [`infra/`](infra) (environment register, secrets register, runbooks), plus the root `Makefile` and `docker-compose.yml`. Build strictly in the order defined by [`roadmap/BUILD_ORDER.md`](roadmap/BUILD_ORDER.md).
+
 ## Status
 
-Specification phase (Phase 0). See [`roadmap/ROADMAP.md`](roadmap/ROADMAP.md) for the implementation plan and [`CHANGELOG.md`](CHANGELOG.md) for repository history.
+Implementation phase, BUILD_ORDER step 1 complete (project scaffolding and environments). See [`roadmap/ROADMAP.md`](roadmap/ROADMAP.md) for the delivery plan and [`CHANGELOG.md`](CHANGELOG.md) for specification history.
 
 ---
 

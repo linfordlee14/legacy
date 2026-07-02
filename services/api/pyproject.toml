@@ -1,0 +1,40 @@
+[project]
+name = "legacy-api"
+version = "0.1.0"
+description = "Legacy platform API service (FastAPI). Spec: architecture/MASTER_ARCHITECTURE.md, api/API_SPECIFICATION.md."
+requires-python = ">=3.11"
+dependencies = [
+    "fastapi>=0.115,<1",
+    "uvicorn[standard]>=0.30,<1",
+    "pydantic-settings>=2.4,<3",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8",
+    "httpx>=0.27",
+    "ruff>=0.6",
+    "mypy>=1.11",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/legacy_api"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 100
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
+
+[tool.mypy]
+strict = true
+packages = ["legacy_api"]
+mypy_path = "src"
