@@ -17,6 +17,21 @@ This file is exempt from the 12-section specification structure per [SPEC_CONVEN
 
 - Nothing yet.
 
+## [0.2.0] - 2026-07-02
+
+MVP implementation planning.
+
+### Added
+
+- `roadmap/MVP_PLAN.md`: the smallest production-ready MVP (roadmap Phase 1 plus the M7 search and M8 verification queue milestones), with staged development order, success criteria, and a descope ladder.
+- `roadmap/IMPLEMENTATION_TASKS.md`: MVP-001 through MVP-026 engineering tasks with acceptance criteria, dependencies, effort, and priority, each mapped to its parent canonical TASK ID.
+- `roadmap/BUILD_ORDER.md`: the strict build sequence (steps 1 to 22 plus stretch S1 to S3), a session protocol for implementation sessions, and the post-MVP continuation order.
+- `roadmap/RISKS.md`: RISK-19 (graph extraction quality) and RISK-20 (retrieval quality) added to the register.
+
+### Fixed
+
+- `roadmap/ROADMAP.md`: risk ID cross-references aligned to the canonical numbering in `roadmap/RISKS.md` (the two documents were authored in parallel with divergent numbering); maintenance task range corrected to TASK-001 through TASK-006.
+
 ## [0.1.0] - 2026-07-02
 
 Initial specification repository.

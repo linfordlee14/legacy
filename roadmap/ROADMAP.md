@@ -22,7 +22,7 @@ Planning is phase-based, not date-based. The owner's actual weekly availability,
 
 1. Sequence the sixteen features (F1-F16) so that each phase produces standalone value even if later phases are delayed or abandoned.
 2. Make every phase completion objectively testable, so "done" is never a feeling.
-3. Front-load the capabilities that make the platform personally valuable early, directly mitigating the motivation risk in [RISKS](./RISKS.md) (RISK-02).
+3. Front-load the capabilities that make the platform personally valuable early, directly mitigating the motivation risk in [RISKS](./RISKS.md) (RISK-15).
 4. Encode decision gates at phase exits so that architecture defaults (Supabase, Postgres graph modeling, model routing) are re-examined with real evidence rather than locked in forever.
 5. Keep the specification repository (Phase 0 output) current as the system evolves, per the maintenance tasks in [TASKS](./TASKS.md).
 
@@ -126,8 +126,8 @@ Ongoing operation, maintenance, and FUTURE_FEATURES triggers
 - **Feature scope:** No product features; the deliverable is this repository, including [MASTER_CONTEXT](../knowledge/MASTER_CONTEXT.md) with its confidence tiers and section 12 verification queue.
 - **Entry criteria:** Decision to build Legacy as a specification-driven project.
 - **Exit criteria (met):** Every document in the repository map of [SPEC_CONVENTIONS](../docs/SPEC_CONVENTIONS.md) exists and follows the mandatory structure; MASTER_CONTEXT is consolidated with tiered claims and an explicit verification queue; ID schemes are assigned without collisions.
-- **Key risks:** RISK-09 (verification debt begins here if the section 12 queue is ignored), RISK-03 (spec scope creep).
-- **Decision gates:** None; the standing obligation is spec maintenance (TASK-001 through TASK-008 in [TASKS](./TASKS.md)).
+- **Key risks:** RISK-08 (verification debt begins here if the section 12 queue is ignored), RISK-10 (spec scope creep).
+- **Decision gates:** None; the standing obligation is spec maintenance (TASK-001 through TASK-006 in [TASKS](./TASKS.md)).
 
 ### 4.5 Phase 1: Foundation
 
@@ -140,7 +140,7 @@ Ongoing operation, maintenance, and FUTURE_FEATURES triggers
   3. Automated backups run on schedule and one full restore drill has passed, per [BACKUP_AND_RECOVERY](../deployment/BACKUP_AND_RECOVERY.md).
   4. CI runs the test baseline in [TESTING](../testing/TESTING.md) on every change and blocks on failure.
   5. The seed corpus (existing documents, writing, and this repository) is imported and listed in the workspace.
-- **Key risks:** RISK-02 (early value must be real or the project stalls), RISK-03 (scope creep into later phases), RISK-13 (data loss before backup discipline exists), RISK-01 (bus factor).
+- **Key risks:** RISK-15 (early value must be real or the project stalls), RISK-10 (scope creep into later phases), RISK-04 (data loss before backup discipline exists), RISK-01 (bus factor).
 - **Decision gate G1, stack confirmation:** After real usage, confirm or revise the baseline defaults (Supabase, FastAPI, Next.js) via ADR update in [MASTER_ARCHITECTURE](../architecture/MASTER_ARCHITECTURE.md). Changing datastore later is far more expensive than changing it here.
 
 ### 4.6 Phase 2: Knowledge Core
@@ -154,7 +154,7 @@ Ongoing operation, maintenance, and FUTURE_FEATURES triggers
   3. Hybrid search returns relevant results for natural-language queries within the latency targets of [NON_FUNCTIONAL_REQUIREMENTS](../specs/NON_FUNCTIONAL_REQUIREMENTS.md), and respects privacy tiers.
   4. The verification queue exists, is seeded with every MASTER_CONTEXT section 12 item, and at least one 🔴 item has been resolved end to end (evidence attached, tier updated, MASTER_CONTEXT changelog entry written).
   5. No graph or search operation exposes content above the querying identity's tier.
-- **Key risks:** RISK-17 (extraction errors polluting the graph), RISK-09 (verification queue treated as decoration), RISK-18 (search quality), RISK-05 (tier leaks through new query paths).
+- **Key risks:** RISK-19 (extraction errors polluting the graph), RISK-08 (verification queue treated as decoration), RISK-20 (search quality), RISK-02 (tier leaks through new query paths).
 - **Decision gate G2, graph database re-evaluation:** With real graph size and query patterns known, decide whether PostgreSQL node and edge tables remain sufficient or a dedicated graph database migration (see [FUTURE_FEATURES](./FUTURE_FEATURES.md)) is warranted. Also lock the embedding model choice and record the re-embedding cost implications.
 
 ### 4.7 Phase 3: Intelligence
@@ -169,7 +169,7 @@ Ongoing operation, maintenance, and FUTURE_FEATURES triggers
   4. The explorer browses projects and research with graph, timeline, and search integration (F13).
   5. Adversarial content planted in an ingested document does not alter system behavior (prompt injection suite in [SECURITY](../security/SECURITY.md) passes).
   6. Monthly LLM spend is visible on a dashboard with alert thresholds.
-- **Key risks:** RISK-04 (cost escalation begins with heavy LLM use), RISK-06 (prompt injection surface opens), RISK-10 (behavior drift), RISK-18 (retrieval quality gates answer quality).
+- **Key risks:** RISK-05 (cost escalation begins with heavy LLM use), RISK-09 (prompt injection surface opens), RISK-13 (behavior drift), RISK-20 (retrieval quality gates answer quality).
 - **Decision gate G3, RAG quality and spend review:** Twin work (Phase 4) does not start until citation coverage, refusal accuracy, and cost-per-answer are measured and accepted. A twin built on a weak retrieval layer would be fluent and wrong, which is the worst outcome for this project.
 
 ### 4.8 Phase 4: Twin and Agents
@@ -184,7 +184,7 @@ Ongoing operation, maintenance, and FUTURE_FEATURES triggers
   4. The Mentor Agent produces advice grounded in the owner's recorded trajectory, goals, and lessons, with citations (F14).
   5. The Writing Agent drafts an article and a presentation outline conforming to the documented style guide, including the no-em-dash rule (F15).
   6. A behavioral regression baseline is pinned so that provider model upgrades can be diffed before adoption.
-- **Key risks:** RISK-08 (twin misrepresentation is the flagship reputational risk), RISK-10 (drift invalidating calibration), RISK-04 (agent loops multiply cost), RISK-03 (agent scope creep).
+- **Key risks:** RISK-03 (twin misrepresentation is the flagship reputational risk), RISK-13 (drift invalidating calibration), RISK-05 (agent loops multiply cost), RISK-10 (agent scope creep).
 - **Decision gate G4, twin honesty gate:** No twin or agent output surface may be exposed beyond the owner (P1 or P0) until the honesty suite pass rate meets the [QUALITY_ASSURANCE](../testing/QUALITY_ASSURANCE.md) threshold at two consecutive review points.
 
 ### 4.9 Phase 5: Legacy and Public
@@ -198,7 +198,7 @@ Ongoing operation, maintenance, and FUTURE_FEATURES triggers
   3. A versioned Legacy Vault export (Markdown, JSON, media manifest) is produced, restored on a clean machine, and read offline end to end (F16).
   4. The succession runbook has been exercised in a steward simulation: a technically competent person other than the owner completes the documented steps to gain steward access and operate core functions.
   5. POPIA compliance review is complete and the third-party complaint process (for named collaborators in the corpus) is documented and reachable from the public site.
-- **Key risks:** RISK-05 (public surface raises breach stakes), RISK-14 (POPIA), RISK-15 (third-party complaints), RISK-16 (succession failure), RISK-09 (verification debt leaking into public content).
+- **Key risks:** RISK-02 (public surface raises breach stakes), RISK-11 (POPIA), RISK-12 (third-party complaints), RISK-14 (succession failure), RISK-08 (verification debt leaking into public content).
 - **Decision gate G5, public launch and v1 declaration:** Go/no-go on public exposure, then declare v1 and move remaining ambitions to [FUTURE_FEATURES](./FUTURE_FEATURES.md) triage.
 
 ## 5. Acceptance Criteria
@@ -226,12 +226,12 @@ The full register is [RISKS](./RISKS.md). Roadmap-level concentrations:
 
 | Phase | Dominant risks |
 |-------|----------------|
-| 1 | RISK-01, RISK-02, RISK-03, RISK-13 |
-| 2 | RISK-05, RISK-09, RISK-17, RISK-18 |
-| 3 | RISK-04, RISK-06, RISK-10, RISK-18 |
-| 4 | RISK-03, RISK-04, RISK-08, RISK-10 |
-| 5 | RISK-05, RISK-09, RISK-14, RISK-15, RISK-16 |
-| All | RISK-01 (bus factor), RISK-11 (vendors), RISK-12 (format rot) |
+| 1 | RISK-01, RISK-15, RISK-10, RISK-04 |
+| 2 | RISK-02, RISK-08, RISK-19, RISK-20 |
+| 3 | RISK-05, RISK-09, RISK-13, RISK-20 |
+| 4 | RISK-03, RISK-05, RISK-10, RISK-13 |
+| 5 | RISK-02, RISK-08, RISK-11, RISK-12, RISK-14 |
+| All | RISK-01 (bus factor), RISK-06 (vendors), RISK-07 (format rot) |
 
 The single most important structural mitigation is ordering: honesty infrastructure (F9) ships two phases before the twin (F6), and the twin ships one phase before anything public (F10).
 
@@ -262,7 +262,7 @@ At Gate G2, an ADR update in [MASTER_ARCHITECTURE](../architecture/MASTER_ARCHIT
 - > TODO(verify): Owner capacity, budget, and collaborator availability (section 1). This is the largest planning unknown.
 - Should Phase 2 and Phase 3 overlap for a solo builder (search shipping while graph extraction matures), or is strict sequencing safer? Deferred to Gate G1 with usage evidence.
 - What corpus size makes Phase 2 entry meaningful? A provisional heuristic (enough real documents to test extraction) is used; a concrete number should be set when the seed import completes.
-- Where should the steward simulation participant come from (family, a trusted peer such as a named collaborator, or a professional)? Sensitive, owner decision; see also RISK-16.
+- Where should the steward simulation participant come from (family, a trusted peer such as a named collaborator, or a professional)? Sensitive, owner decision; see also RISK-14.
 - Does the ADEL or ICMM outcome (🔴 in MASTER_CONTEXT section 7) change portfolio priorities for Phase 5? Blocked on the verification queue.
 
 ## 11. References

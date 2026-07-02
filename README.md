@@ -29,6 +29,7 @@ Read in this order:
 8. **Operations:** [`deployment/DEPLOYMENT.md`](deployment/DEPLOYMENT.md) · [`deployment/CI_CD.md`](deployment/CI_CD.md) · [`deployment/OBSERVABILITY.md`](deployment/OBSERVABILITY.md) · [`deployment/BACKUP_AND_RECOVERY.md`](deployment/BACKUP_AND_RECOVERY.md)
 9. **Quality and experience:** [`testing/TESTING.md`](testing/TESTING.md) · [`testing/QUALITY_ASSURANCE.md`](testing/QUALITY_ASSURANCE.md) · [`ui/UI_UX.md`](ui/UI_UX.md) · [`ui/DESIGN_SYSTEM.md`](ui/DESIGN_SYSTEM.md) · [`ui/ACCESSIBILITY.md`](ui/ACCESSIBILITY.md)
 10. **Delivery:** [`roadmap/ROADMAP.md`](roadmap/ROADMAP.md) · [`roadmap/TASKS.md`](roadmap/TASKS.md) · [`roadmap/RISKS.md`](roadmap/RISKS.md) · [`roadmap/FUTURE_FEATURES.md`](roadmap/FUTURE_FEATURES.md)
+11. **MVP execution:** [`roadmap/MVP_PLAN.md`](roadmap/MVP_PLAN.md) · [`roadmap/IMPLEMENTATION_TASKS.md`](roadmap/IMPLEMENTATION_TASKS.md) · [`roadmap/BUILD_ORDER.md`](roadmap/BUILD_ORDER.md) (implementation sessions start with BUILD_ORDER's session protocol)
 
 Repository meta: [`CONTRIBUTING.md`](CONTRIBUTING.md) · [`CHANGELOG.md`](CHANGELOG.md)
 
