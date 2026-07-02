@@ -36,7 +36,7 @@ Every specification document MUST contain these sections, in this order. A secti
 11. **References**
 12. **Related Specifications**
 
-Documents that are indexes or narrative anchors (`README.md`, `CHANGELOG.md`, `knowledge/MASTER_CONTEXT.md`) are exempt. `VISION.md`, `MISSION.md`, and `LEGACY_PRINCIPLES.md` follow the structure with sections interpreted at product level.
+Documents that are indexes, meta-documents, or narrative anchors (`README.md`, `CHANGELOG.md`, `knowledge/MASTER_CONTEXT.md`, and this conventions document) are exempt. `VISION.md`, `MISSION.md`, and `LEGACY_PRINCIPLES.md` follow the structure with sections interpreted at product level.
 
 Each document begins with a title block:
 
