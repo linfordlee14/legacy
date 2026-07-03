@@ -21,9 +21,27 @@ class Settings(BaseSettings):
     api_host: str = "0.0.0.0"
     api_port: int = 8000
 
+    # Database (DEP-18: URL arrives via environment or secret manager only).
+    database_url: str | None = None
+
+    # OIDC resource-server settings (AUTHENTICATION 4.1: managed provider,
+    # Supabase Auth as the default decision). Issuer and audience are
+    # non-secret configuration; there is no client secret in this service.
+    oidc_issuer: str | None = None
+    oidc_audience: str | None = None
+    oidc_jwks_url: str | None = None
+
+    # Step-up window for sensitive actions (AUTHENTICATION 4.3): a sensitive
+    # action requires an authentication event within this many seconds.
+    step_up_max_age_s: int = 600
+
     @property
     def is_production(self) -> bool:
         return self.env == "production"
+
+    @property
+    def auth_configured(self) -> bool:
+        return bool(self.oidc_issuer and self.oidc_audience)
 
 
 @lru_cache

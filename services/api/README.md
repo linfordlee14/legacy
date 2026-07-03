@@ -4,8 +4,22 @@ The Legacy platform API service (FastAPI). Governing specifications:
 `architecture/MASTER_ARCHITECTURE.md`, `api/API_SPECIFICATION.md`,
 `deployment/DEPLOYMENT.md`.
 
-Current scope (BUILD_ORDER step 1): service skeleton with configuration and
-health endpoints. The `/v1` API surface arrives at step 6 (MVP-007).
+Current scope (BUILD_ORDER steps 1-4): service skeleton, health endpoints,
+the full schema migration, and authentication. The `/v1` conventions layer
+arrives at step 6 (MVP-007).
+
+## Authentication (security/AUTHENTICATION.md)
+
+The API is an OIDC resource server: the managed provider (Supabase Auth by
+default decision) owns login, MFA ceremonies, and refresh-token rotation;
+this service verifies provider-signed JWTs (issuer, audience, signature via
+JWKS), maps `auth_subject` to `app_user`, enforces mandatory MFA for the
+owner (aal2 or an accepted amr factor; SMS is not accepted), detects new
+devices from audit history, applies progressive rate limiting, and audits
+every event. Configure with `LEGACY_OIDC_ISSUER` and `LEGACY_OIDC_AUDIENCE`
+(non-secret); `LEGACY_OIDC_JWKS_URL` overrides the derived JWKS location.
+Sensitive endpoints use the `require_step_up` dependency
+(AUTHENTICATION 4.3: authentication event within 10 minutes).
 
 ## Run locally
 
