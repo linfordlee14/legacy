@@ -208,3 +208,140 @@ section {
   border: 1px dashed var(--text-secondary);
   border-radius: 8px;
 }
+
+/* Workspace shell (UI_UX 4.1 and 4.2) */
+.skip-link {
+  position: absolute;
+  left: -999px;
+  top: 0;
+  background: var(--accent);
+  color: var(--surface);
+  padding: var(--space-1) var(--space-2);
+  z-index: 70;
+}
+
+.skip-link:focus {
+  left: var(--space-1);
+}
+
+.workspace {
+  display: flex;
+  min-height: 100vh;
+}
+
+.workspace-nav {
+  flex: 0 0 14rem;
+  background: var(--surface);
+  border-right: 1px solid var(--surface-raised);
+  padding: var(--space-2);
+}
+
+.workspace-nav .brand {
+  font-weight: 700;
+  font-size: 1.2rem;
+  margin: 0 0 var(--space-2);
+}
+
+.workspace-nav ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.workspace-nav a {
+  display: block;
+  padding: var(--space-1);
+  border-radius: 6px;
+  color: var(--text-primary);
+  text-decoration: none;
+}
+
+.workspace-nav a[aria-current="page"] {
+  background: var(--surface-raised);
+  font-weight: 600;
+}
+
+.workspace-main {
+  flex: 1;
+  min-width: 0;
+}
+
+.panel-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+  gap: var(--space-2);
+}
+
+.panel {
+  background: var(--surface);
+  border: 1px solid var(--surface-raised);
+  border-radius: 8px;
+  padding: var(--space-2);
+}
+
+.panel .count {
+  font-size: 2rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.item-list {
+  list-style: none;
+  padding: 0;
+}
+
+.item-list li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  padding: var(--space-1) 0;
+  border-bottom: 1px solid var(--surface-raised);
+}
+
+.detail-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+}
+
+.content-body {
+  white-space: pre-wrap;
+  background: var(--surface);
+  border: 1px solid var(--surface-raised);
+  border-radius: 8px;
+  padding: var(--space-2);
+  overflow-x: auto;
+}
+
+.badge {
+  display: inline-block;
+  padding: 0.1rem 0.5rem;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  border: 1px solid var(--text-secondary);
+}
+
+.confidence-verified {
+  border-color: #2f8a4e;
+}
+.confidence-self_reported {
+  border-color: var(--warning);
+}
+.confidence-flagged {
+  border-color: var(--danger);
+}
+
+.provenance {
+  margin-top: var(--space-3);
+}
+
+.provenance ul {
+  list-style: none;
+  padding: 0;
+}
+
+.provenance li {
+  padding: var(--space-1) 0;
+}

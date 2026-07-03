@@ -33,6 +33,7 @@ from legacy_api.obs.logging import setup_logging
 from legacy_api.obs.metrics import Metrics
 from legacy_api.obs.tracing import TracingMiddleware
 from legacy_api.routes.claims import router as claims_router
+from legacy_api.routes.content import router as content_router
 from legacy_api.routes.ingestion import router as ingestion_router
 from legacy_api.routes.tokens import router as tokens_router
 from legacy_api.storage import LocalObjectStorage
@@ -115,6 +116,8 @@ def create_app(
     app.include_router(claims_router)
     app.include_router(tokens_router)
     app.include_router(ingestion_router)
+    # Path-parameterized collections register last so specific routes win.
+    app.include_router(content_router)
 
     @app.get("/metrics", include_in_schema=False)
     def metrics() -> Response:

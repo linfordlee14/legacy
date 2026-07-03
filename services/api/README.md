@@ -24,6 +24,15 @@ failed items), and honor Idempotency-Key on creation. Creation requires
 CONTENT_CREATE (owner or a write:content machine token); job reads are
 owner-only.
 
+## Content reads (API_SPECIFICATION 4.4)
+
+`GET /v1/{collection}` and `GET /v1/{collection}/{id}` serve the notes and
+artifacts collections for the workspace shell: tier-filtered through the
+policy service with per-row grant-scope refinement for trusted callers,
+cursor-paginated, uniform not_found on single reads, and the provenance
+block attached on detail. Writes continue to flow through ingestion;
+editing with revisions arrives at MVP-015.
+
 ## Observability (deployment/OBSERVABILITY.md)
 
 `obs/` implements the baseline: structured JSON logs where every event

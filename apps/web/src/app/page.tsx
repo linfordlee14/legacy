@@ -6,7 +6,7 @@ export default function HomePage() {
       <h1>Legacy</h1>
       <p>Your Life. Your Knowledge. Your Impact. Preserved Forever.</p>
       <p>
-        <Link href="/inbox">Open the capture inbox</Link>
+        <Link href="/dashboard">Enter the workspace</Link>
       </p>
     </section>
   );
