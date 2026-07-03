@@ -47,6 +47,10 @@ migrate:
 migrate-down:
 	cd services/api && LEGACY_DATABASE_URL=$${LEGACY_DATABASE_URL:-postgresql://legacy:legacy@localhost:5432/legacy_local} .venv/bin/alembic downgrade -1
 
+# Proves the alert pipeline end to end (OBSERVABILITY 4.5; step 7 acceptance).
+test-alert:
+	cd services/api && LEGACY_ENV=local .venv/bin/python -m legacy_api.obs.alerts
+
 spec-check:
 	python3 scripts/check_specs.py
 

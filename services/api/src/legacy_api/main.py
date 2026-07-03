@@ -11,6 +11,7 @@ from contextlib import asynccontextmanager
 from typing import Annotated
 
 from fastapi import Depends, FastAPI
+from fastapi.responses import Response
 from pydantic import BaseModel
 
 from legacy_api import __version__
@@ -26,6 +27,10 @@ from legacy_api.auth import (
 )
 from legacy_api.config import Environment, Settings, get_settings
 from legacy_api.db import create_pool
+from legacy_api.obs.alerts import AlertRouter
+from legacy_api.obs.logging import setup_logging
+from legacy_api.obs.metrics import Metrics
+from legacy_api.obs.tracing import TracingMiddleware
 from legacy_api.routes.claims import router as claims_router
 from legacy_api.verifier import TokenVerifier, jwks_key_provider
 
@@ -88,15 +93,37 @@ def create_app(
     app.state.rate_limiter = FailureRateLimiter()
     app.state.request_bucket = TokenBucketLimiter(per_minute=settings.rate_limit_per_minute)
     app.state.idempotency = IdempotencyStore(ttl_s=settings.idempotency_ttl_s)
+    app.state.metrics = Metrics()
+    app.state.alerts = AlertRouter(
+        notifier=app.state.notifier,
+        quiet_start_hour=settings.quiet_hours_start_utc,
+        quiet_end_hour=settings.quiet_hours_end_utc,
+    )
 
-    # Middleware order: RequestId outermost so every response, including
-    # rate-limited ones, carries the id (API_SPECIFICATION 4.2).
+    # Middleware order (outermost first): RequestId so every response carries
+    # the id (API_SPECIFICATION 4.2), then Tracing so even rate-limited
+    # requests appear as spans, then the rate limiter.
     app.add_middleware(RateLimitMiddleware)
+    app.add_middleware(TracingMiddleware)
     app.add_middleware(RequestIdMiddleware)
     install_error_handlers(app)
     app.include_router(claims_router)
 
-    logging.basicConfig(level=logging.INFO)
+    @app.get("/metrics", include_in_schema=False)
+    def metrics() -> Response:
+        """Prometheus exposition; the platform scrapes this internally
+        (DEP-12: not reachable through the public entry point)."""
+        return Response(
+            content=app.state.metrics.render(), media_type="text/plain; version=0.0.4"
+        )
+
+    # Structured JSON logging with redaction (OBS-01 to OBS-06); emission is
+    # queued off the request path outside local development.
+    setup_logging(
+        environment=settings.env,
+        level=settings.log_level,
+        async_mode=settings.env in ("staging", "production"),
+    )
     logger.info(
         "legacy-api starting", extra={"environment": settings.env, "version": __version__}
     )

@@ -21,6 +21,7 @@ from legacy_api.api.pagination import (
     page_of,
 )
 from legacy_api.auth import Principal, authenticate_optional
+from legacy_api.obs.tracing import span
 from legacy_api.policy import (
     Action,
     Resource,
@@ -93,19 +94,20 @@ async def list_claims(
             clauses.append("confidence_tier = %(tier)s")
             params["tier"] = tier
 
-        async with conn.cursor(row_factory=dict_row) as cur:
-            await cur.execute(
-                f"""
-                SELECT id, subject_type, subject_id, predicate, statement,
-                       privacy_tier, confidence_tier, created_at, updated_at
-                FROM claim
-                WHERE {" AND ".join(clauses)}
-                ORDER BY id {direction}
-                LIMIT %(limit)s
-                """,
-                params,
-            )
-            rows = await cur.fetchall()
+        with span("db.claim_list"):
+            async with conn.cursor(row_factory=dict_row) as cur:
+                await cur.execute(
+                    f"""
+                    SELECT id, subject_type, subject_id, predicate, statement,
+                           privacy_tier, confidence_tier, created_at, updated_at
+                    FROM claim
+                    WHERE {" AND ".join(clauses)}
+                    ORDER BY id {direction}
+                    LIMIT %(limit)s
+                    """,
+                    params,
+                )
+                rows = await cur.fetchall()
 
         rows = await _scope_filter(conn, ctx, rows)
         provenance = await provenance_for_claims(conn, [str(r["id"]) for r in rows])

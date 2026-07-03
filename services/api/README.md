@@ -4,9 +4,24 @@ The Legacy platform API service (FastAPI). Governing specifications:
 `architecture/MASTER_ARCHITECTURE.md`, `api/API_SPECIFICATION.md`,
 `deployment/DEPLOYMENT.md`.
 
-Current scope (BUILD_ORDER steps 1-6): service skeleton, health endpoints,
-the full schema migration, authentication, the authorization core, and the
-`/v1` conventions layer with the claims resource.
+Current scope (BUILD_ORDER steps 1-7): service skeleton, health endpoints,
+the full schema migration, authentication, the authorization core, the
+`/v1` conventions layer with the claims resource, and the observability
+baseline.
+
+## Observability (deployment/OBSERVABILITY.md)
+
+`obs/` implements the baseline: structured JSON logs where every event
+carries service, environment, request and trace ids, and typed fields only;
+a redaction filter enforcing the absolute ID-only content rule (field
+allowlist, content-field stripping, email/token/long-text scrubbing,
+fail-closed drops); log-emitted spans reconstructable per trace id
+(`X-Trace-ID` on every response); a per-app Prometheus registry at
+`GET /metrics` (request latency and outcomes per route group, plus the
+dormant token-spend counter the model router will feed); and the SEV-1 to
+SEV-4 alert router with owner-configured quiet hours that SEV-1 overrides.
+`make test-alert` proves the emission-to-owner-channel path. Channel
+bindings, dashboards, and trace export bind at platform provisioning.
 
 ## /v1 conventions (api/API_SPECIFICATION.md 4.1 to 4.3)
 

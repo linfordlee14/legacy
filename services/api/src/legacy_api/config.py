@@ -39,6 +39,12 @@ class Settings(BaseSettings):
     rate_limit_per_minute: int = 240
     idempotency_ttl_s: int = 86400
 
+    # Observability (OBSERVABILITY 4.1, 4.5). Production runs at info
+    # (OBS-02); quiet hours are owner-configured UTC hours (OBS-20).
+    log_level: str = "info"
+    quiet_hours_start_utc: int | None = None
+    quiet_hours_end_utc: int | None = None
+
     @property
     def is_production(self) -> bool:
         return self.env == "production"
