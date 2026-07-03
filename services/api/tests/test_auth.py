@@ -179,7 +179,7 @@ def test_health_endpoints_open_and_db_ready(client: "TestClient") -> None:
 def test_unauthenticated_request_rejected(client: "TestClient") -> None:
     response = client.get("/v1/auth/session")
     assert response.status_code == 401
-    assert response.json()["detail"]["code"] == "unauthenticated"
+    assert response.json()["error"]["code"] == "unauthenticated"
 
 
 def test_owner_with_mfa_succeeds_and_is_audited(
@@ -227,7 +227,7 @@ def test_new_device_with_stale_auth_requires_step_up(
         ua="different-device",
     )
     assert response.status_code == 401
-    assert response.json()["detail"]["code"] == "step_up_required"
+    assert response.json()["error"]["details"]["reason"] == "step_up_required"
     assert audit_count(db, "login_denied", users["owner-sub"]) >= 1
 
 
@@ -248,7 +248,7 @@ def test_owner_without_mfa_is_denied_no_bypass(
     before = audit_count(db, "login_denied", users["owner-sub"])
     response = get_session(client, issue_token("owner-sub", mfa=False))
     assert response.status_code == 403
-    assert response.json()["detail"]["code"] == "mfa_required"
+    assert response.json()["error"]["details"]["reason"] == "mfa_required"
     assert audit_count(db, "login_denied", users["owner-sub"]) == before + 1
 
 
@@ -270,7 +270,7 @@ def test_service_principal_cannot_authenticate_interactively(
 def test_suspended_account_denied(client: "TestClient") -> None:
     response = get_session(client, issue_token("susp-sub"))
     assert response.status_code == 403
-    assert response.json()["detail"]["code"] == "forbidden"
+    assert response.json()["error"]["code"] == "forbidden"
 
 
 def test_unknown_subject_denied_and_audited(
@@ -326,4 +326,4 @@ def test_step_up_required_for_sensitive_actions(client: "TestClient") -> None:
         headers={"Authorization": f"Bearer {stale}", "User-Agent": "test-browser"},
     )
     assert denied.status_code == 401
-    assert denied.json()["detail"]["code"] == "step_up_required"
+    assert denied.json()["error"]["details"]["reason"] == "step_up_required"

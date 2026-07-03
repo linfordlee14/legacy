@@ -14,6 +14,9 @@ from fastapi import Depends, FastAPI
 from pydantic import BaseModel
 
 from legacy_api import __version__
+from legacy_api.api.errors import RequestIdMiddleware, install_error_handlers
+from legacy_api.api.idempotency import IdempotencyStore
+from legacy_api.api.ratelimit import RateLimitMiddleware, TokenBucketLimiter
 from legacy_api.auth import (
     FailureRateLimiter,
     LogNotifier,
@@ -23,6 +26,7 @@ from legacy_api.auth import (
 )
 from legacy_api.config import Environment, Settings, get_settings
 from legacy_api.db import create_pool
+from legacy_api.routes.claims import router as claims_router
 from legacy_api.verifier import TokenVerifier, jwks_key_provider
 
 logger = logging.getLogger("legacy_api")
@@ -82,6 +86,15 @@ def create_app(
     app.state.verifier = verifier or default_verifier(settings)
     app.state.notifier = notifier or LogNotifier()
     app.state.rate_limiter = FailureRateLimiter()
+    app.state.request_bucket = TokenBucketLimiter(per_minute=settings.rate_limit_per_minute)
+    app.state.idempotency = IdempotencyStore(ttl_s=settings.idempotency_ttl_s)
+
+    # Middleware order: RequestId outermost so every response, including
+    # rate-limited ones, carries the id (API_SPECIFICATION 4.2).
+    app.add_middleware(RateLimitMiddleware)
+    app.add_middleware(RequestIdMiddleware)
+    install_error_handlers(app)
+    app.include_router(claims_router)
 
     logging.basicConfig(level=logging.INFO)
     logger.info(

@@ -4,9 +4,24 @@ The Legacy platform API service (FastAPI). Governing specifications:
 `architecture/MASTER_ARCHITECTURE.md`, `api/API_SPECIFICATION.md`,
 `deployment/DEPLOYMENT.md`.
 
-Current scope (BUILD_ORDER steps 1-5): service skeleton, health endpoints,
-the full schema migration, authentication, and the authorization core. The
-`/v1` conventions layer arrives at step 6 (MVP-007).
+Current scope (BUILD_ORDER steps 1-6): service skeleton, health endpoints,
+the full schema migration, authentication, the authorization core, and the
+`/v1` conventions layer with the claims resource.
+
+## /v1 conventions (api/API_SPECIFICATION.md 4.1 to 4.3)
+
+`api/errors.py` renders every failure as the one envelope
+(`{"error": {code, message, request_id, details?}}`) with the ten canonical
+codes exactly; request ids are accepted via `X-Request-ID` or minted, and
+echoed on every response. `api/pagination.py` implements opaque cursor
+pagination (default 25, max 100). `api/idempotency.py` gives mutating routes
+Idempotency-Key replay (identical retry returns the original result;
+key reuse with a different request is refused as `idempotency_replay`).
+`api/ratelimit.py` applies a token-bucket request budget to all of `/v1`
+with `Retry-After`. `provenance.py` serializes the mandatory provenance
+block (per-claim tier plus resolvable sources). First real resource:
+`GET /v1/claims` and `GET /v1/claims/{id}`, tier-filtered through the policy
+service with grant-scope refinement for trusted callers.
 
 ## Authorization (security/AUTHORIZATION.md)
 

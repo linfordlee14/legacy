@@ -328,10 +328,14 @@ def test_steward_activation_states(
 def test_missing_and_above_ceiling_are_indistinguishable(
     client: "TestClient", db: "psycopg.Connection", ids: dict
 ) -> None:
-    missing = get(client, f"/v1/_test/notes/{uuid.uuid4()}")
-    above = get(client, f"/v1/_test/notes/{ids['note_p2']}")
+    # A pinned request id makes the two envelopes byte-comparable and also
+    # proves the X-Request-ID echo of API_SPECIFICATION 4.2.
+    headers = {"User-Agent": "authz-tests", "X-Request-ID": "leak-probe"}
+    missing = client.get(f"/v1/_test/notes/{uuid.uuid4()}", headers=headers)
+    above = client.get(f"/v1/_test/notes/{ids['note_p2']}", headers=headers)
     assert missing.status_code == above.status_code == 404
     assert missing.json() == above.json()
+    assert missing.json()["error"]["request_id"] == "leak-probe"
 
     denied = audit_rows(db, "authz_denied")
     assert any(

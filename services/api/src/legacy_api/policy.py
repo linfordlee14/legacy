@@ -29,6 +29,11 @@ def tier_at_most(tier: str, ceiling: str) -> bool:
     return TIER_ORDER[tier] <= TIER_ORDER[ceiling]
 
 
+def tiers_within(ceiling: str) -> list[str]:
+    """The tiers a ceiling may read, for SQL-level filtering (4.4 point 2)."""
+    return [t for t, rank in TIER_ORDER.items() if rank <= TIER_ORDER[ceiling]]
+
+
 class Action(StrEnum):
     """The permission-matrix action classes of AUTHORIZATION 4.2."""
 

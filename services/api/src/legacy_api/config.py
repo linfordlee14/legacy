@@ -35,6 +35,10 @@ class Settings(BaseSettings):
     # action requires an authentication event within this many seconds.
     step_up_max_age_s: int = 600
 
+    # /v1 conventions (API_SPECIFICATION 4.1).
+    rate_limit_per_minute: int = 240
+    idempotency_ttl_s: int = 86400
+
     @property
     def is_production(self) -> bool:
         return self.env == "production"
