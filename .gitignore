@@ -24,3 +24,8 @@ coverage/
 
 # Build caches
 tsconfig.tsbuildinfo
+
+# Runtime data (local object storage, local backups)
+/storage/
+/backups/
+services/api/storage/

@@ -39,6 +39,10 @@ class Settings(BaseSettings):
     rate_limit_per_minute: int = 240
     idempotency_ttl_s: int = 86400
 
+    # Object storage root for the local backend (DEP-09: Supabase Storage
+    # binds behind the same port at provisioning).
+    storage_dir: str = "./storage"
+
     # Observability (OBSERVABILITY 4.1, 4.5). Production runs at info
     # (OBS-02); quiet hours are owner-configured UTC hours (OBS-20).
     log_level: str = "info"

@@ -4,10 +4,25 @@ The Legacy platform API service (FastAPI). Governing specifications:
 `architecture/MASTER_ARCHITECTURE.md`, `api/API_SPECIFICATION.md`,
 `deployment/DEPLOYMENT.md`.
 
-Current scope (BUILD_ORDER steps 1-7): service skeleton, health endpoints,
-the full schema migration, authentication, the authorization core, the
-`/v1` conventions layer with the claims resource, and the observability
-baseline.
+Current scope (BUILD_ORDER steps 1-10): service skeleton, health endpoints,
+the full schema migration, authentication with PATs, the authorization
+core, the `/v1` conventions layer with the claims resource, the
+observability baseline, and the ingestion pipeline for documents and notes.
+
+## Ingestion (FS-001 slice; FR-ING-001, 007, 008)
+
+`POST /v1/ingestion/jobs` accepts multipart files plus a JSON payload of
+notes; originals are stored content-addressed in object storage BEFORE any
+parsing (`storage.py`: local backend now, Supabase Storage behind the same
+port at provisioning). The pipeline extracts text from Markdown, plain
+text, and PDF into `canonical_markdown`, dedups by content hash (duplicate
+items reference the existing artifact, no second row), flags unparseable
+files for review with the original preserved, and stamps every row with
+ingestion provenance and the P2 default tier. Jobs expose per-item status,
+are listable and retryable (`POST /{id}/retry` reprocesses review and
+failed items), and honor Idempotency-Key on creation. Creation requires
+CONTENT_CREATE (owner or a write:content machine token); job reads are
+owner-only.
 
 ## Observability (deployment/OBSERVABILITY.md)
 

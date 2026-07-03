@@ -8,6 +8,7 @@ identity required by DEP-06. Authentication per security/AUTHENTICATION.md.
 import logging
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
+from pathlib import Path
 from typing import Annotated
 
 from fastapi import Depends, FastAPI
@@ -32,7 +33,9 @@ from legacy_api.obs.logging import setup_logging
 from legacy_api.obs.metrics import Metrics
 from legacy_api.obs.tracing import TracingMiddleware
 from legacy_api.routes.claims import router as claims_router
+from legacy_api.routes.ingestion import router as ingestion_router
 from legacy_api.routes.tokens import router as tokens_router
+from legacy_api.storage import LocalObjectStorage
 from legacy_api.verifier import TokenVerifier, jwks_key_provider
 
 logger = logging.getLogger("legacy_api")
@@ -95,6 +98,7 @@ def create_app(
     app.state.request_bucket = TokenBucketLimiter(per_minute=settings.rate_limit_per_minute)
     app.state.idempotency = IdempotencyStore(ttl_s=settings.idempotency_ttl_s)
     app.state.metrics = Metrics()
+    app.state.storage = LocalObjectStorage(Path(settings.storage_dir))
     app.state.alerts = AlertRouter(
         notifier=app.state.notifier,
         quiet_start_hour=settings.quiet_hours_start_utc,
@@ -110,6 +114,7 @@ def create_app(
     install_error_handlers(app)
     app.include_router(claims_router)
     app.include_router(tokens_router)
+    app.include_router(ingestion_router)
 
     @app.get("/metrics", include_in_schema=False)
     def metrics() -> Response:
