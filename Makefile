@@ -1,7 +1,7 @@
 # Legacy implementation workspace. Spec anchors: deployment/DEPLOYMENT.md,
 # roadmap/BUILD_ORDER.md. Run `make install` once, then `make test`.
 
-.PHONY: install install-api install-web dev-api dev-web test test-api test-web build up down smoke
+.PHONY: install install-api install-web dev-api dev-web test test-api test-web build up down smoke spec-check lint audit ci
 
 install: install-api install-web
 
@@ -37,3 +37,18 @@ down:
 
 smoke:
 	./scripts/smoke_test.sh http://localhost:8000 local
+
+spec-check:
+	python3 scripts/check_specs.py
+
+lint:
+	cd services/api && .venv/bin/ruff check . && .venv/bin/mypy
+	cd apps/web && npm run lint && npm run typecheck
+
+audit:
+	cd services/api && .venv/bin/bandit -r src --severity-level high -q && .venv/bin/pip-audit --skip-editable
+	cd apps/web && npm audit --audit-level=high
+
+# The full local equivalent of the CI gates (deployment/CI_CD.md 4.2 and 4.3).
+ci: spec-check lint test audit
+	cd apps/web && NEXT_PUBLIC_LEGACY_ENV=local npm run build

@@ -101,7 +101,7 @@ Requirement IDs below are document-scoped (`AIA-##`). They trace upward to the F
 
 **AIA-09.** Embedding model choice is an open decision:
 
-> TODO(decide): select the embedding model (provider-hosted vs open-weight self-hosted), balancing quality, cost per million tokens, dimension size, and decades-long availability. Decision to be recorded as an ADR in [MASTER_ARCHITECTURE](../architecture/MASTER_ARCHITECTURE.md).
+> TODO(decision): select the embedding model (provider-hosted vs open-weight self-hosted), balancing quality, cost per million tokens, dimension size, and decades-long availability. Decision to be recorded as an ADR in [MASTER_ARCHITECTURE](../architecture/MASTER_ARCHITECTURE.md).
 
 **AIA-10.** Dimensioning: the chosen model SHOULD produce vectors of 1536 dimensions or fewer to keep pgvector index size and query cost manageable; if the model supports Matryoshka-style truncation, the stored dimension is fixed in configuration and recorded with the index. One embedding space is used platform-wide per embedding model version; text and transcript modalities share it, image embeddings (if adopted) form a separate named space.
 
@@ -254,9 +254,9 @@ Tier-aware output phrasing (illustrative): a question about SpazaLink's SA Start
 
 ## 10. Open Questions
 
-- > TODO(decide): embedding model selection (AIA-09), including dimension and hosting model.
-- > TODO(decide): which LLM-judge model scores groundedness, and how often human audits sample its output.
-- > TODO(decide): exact frontier, mid, and small tier assignments per provider at launch; belongs in the routing configuration ADR.
+- > TODO(decision): embedding model selection (AIA-09), including dimension and hosting model.
+- > TODO(decision): which LLM-judge model scores groundedness, and how often human audits sample its output.
+- > TODO(decision): exact frontier, mid, and small tier assignments per provider at launch; belongs in the routing configuration ADR.
 - > TODO(verify): provider zero-retention guarantees and data-processing terms for all three providers before any P1+ content is sent (coordinates with [PRIVACY](../security/PRIVACY.md)).
 - Should the negative-set "not in the corpus" behavior be tunable per audience (stricter for public P0 twin than for owner mode)?
 

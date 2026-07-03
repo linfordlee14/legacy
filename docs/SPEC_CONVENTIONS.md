@@ -16,7 +16,7 @@ This document defines the shared template, identifier schemes, canonical vocabul
 1. **MASTER_CONTEXT.md is the only source of truth for facts about Linford.** Do not invent facts. Do not upgrade 🟡 (self-reported) or 🔴 (flagged) claims to established facts. When a fact is needed but missing, write a TODO instead.
 2. **Specification only.** This repository contains no application code: no React, no Python, no SQL, no executable API definitions. Illustrative data examples (JSON payloads, table-shaped schema descriptions, natural-language queries) are permitted; implementation code is not.
 3. **Confidence tiers are first-class.** The tier system (✅ Verified, 🟡 Self-reported, 🔴 Flagged) from MASTER_CONTEXT §0 carries into the product itself (see the `Claim` entity, §6 below) and into any spec text that references biographical facts.
-4. **TODO convention.** Unknowns are recorded as a blockquote in place: `> TODO(verify): <what is missing and where it would come from>`. Every spec also collects its unknowns in its Open Questions section.
+4. **TODO convention.** Unknowns are recorded as a blockquote in place. Two marker forms exist and no others: `> TODO(verify): <missing fact and where it would come from>` for facts awaiting evidence, and `> TODO(decision): <decision to make and its decision point>` for pending design decisions. Every spec also collects its unknowns in its Open Questions section.
 5. **Style.** Clear, direct, production-grade technical prose. No em dashes anywhere in repository content (this mirrors the owner's documented style guide); use commas, colons, or parentheses instead. American English. Sentence-case headings after the title block.
 
 ## 3. Mandatory section structure

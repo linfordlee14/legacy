@@ -39,4 +39,4 @@ Never include P2/P3 content, secrets, or real personal data in diffs, fixtures, 
 ## Deviations and notes
 
 <!-- "None" or: what differed from the plan, decisions escalated to the owner,
-     TODO(verify) items created, and anything for the Gate evidence log. -->
+     any TODO(verify) items created, and anything for the Gate evidence log. -->

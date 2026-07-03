@@ -351,9 +351,9 @@ Traversal: from person_linford, `worked_on` and `contributed_to` edges where the
 
 - > TODO(verify): Should `Place` become a first-class canonical entity instead of place-kind Tags? Needs a decision in DATABASE_SCHEMA and SPEC_CONVENTIONS §6 before promotion.
 - > TODO(verify): Exact founding date of Linfy Tech Solutions for the `founded` edge validity; source expected from the owner's records or a registry listing.
-- > TODO(design): Whether inverse edge names (for example `mentors` as the inverse of `mentored_by`) are materialized or purely computed at query time.
-- > TODO(design): Final entity-resolution similarity feature set and whether embedding similarity of node descriptions joins the v1 scorer.
-- > TODO(design): Whether `mentions` edges should expire to archive automatically after a fixed period without promotion, and the period.
+- > TODO(decision): Whether inverse edge names (for example `mentors` as the inverse of `mentored_by`) are materialized or purely computed at query time.
+- > TODO(decision): Final entity-resolution similarity feature set and whether embedding similarity of node descriptions joins the v1 scorer.
+- > TODO(decision): Whether `mentions` edges should expire to archive automatically after a fixed period without promotion, and the period.
 - > TODO(verify): Which of the 🟡 portfolio projects in MASTER_CONTEXT §6 get graph nodes at seed time versus only after a repo or demo URL is attached (MASTER_CONTEXT §12 item 5).
 
 ## 11. References

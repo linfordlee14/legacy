@@ -254,11 +254,11 @@ A journal entry with kind prayer_reflection is ingested at P3. Its derived memor
 
 ## 10. Open Questions
 
-- > TODO(design): Final numeric weights for relevance, recency, and importance in the retrieval blend; owned by RAG_PIPELINE, needs joint calibration once a corpus exists.
-- > TODO(design): Archival floor value and episodic decay half-life; initial proposal is conservative (long half-life) pending real usage data.
-- > TODO(design): Whether owner feedback ("that answer used a bad memory") should down-rank a memory automatically or only queue it for review.
+- > TODO(decision): Final numeric weights for relevance, recency, and importance in the retrieval blend; owned by RAG_PIPELINE, needs joint calibration once a corpus exists.
+- > TODO(decision): Archival floor value and episodic decay half-life; initial proposal is conservative (long half-life) pending real usage data.
+- > TODO(decision): Whether owner feedback ("that answer used a bad memory") should down-rank a memory automatically or only queue it for review.
 - > TODO(verify): Release-condition taxonomy for P3 (time lock durations, succession triggers) is owned by the security domain and must be finalized before sealed memory ships.
-- > TODO(design): Exact near-duplicate similarity threshold for memory dedup, and whether it shares configuration with the graph entity-resolution thresholds.
+- > TODO(decision): Exact near-duplicate similarity threshold for memory dedup, and whether it shares configuration with the graph entity-resolution thresholds.
 
 ## 11. References
 

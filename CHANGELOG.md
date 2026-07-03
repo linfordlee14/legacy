@@ -15,7 +15,15 @@ This file is exempt from the 12-section specification structure per [SPEC_CONVEN
 
 ## [Unreleased]
 
-- Nothing yet.
+### Added
+
+- `.github/workflows/ci.yml` and `scripts/check_specs.py`: the seven specification checks of `deployment/CI_CD.md` §4.2 are now automated (stages 1 to 6 by script; stage 7 remains reviewer judgment via the PR checklist), together with the applicable §4.3 implementation gates (lint, type check, unit tests, SAST, dependency audit, secret scan, build artifacts) and the CI-04 MASTER_CONTEXT immutability guard. CI-06's manual pre-merge checklist era ends; the checks are required status checks once branch protection is enabled.
+
+- `docs/SPEC_CONVENTIONS.md` §2 rule 4: documented the `> TODO(decision):` marker form for pending design decisions. Defect: the corpus used three marker spellings (decision, and the undocumented decide and design variants) while the convention documented only `TODO(verify)`.
+
+### Fixed
+
+- Normalized all decision-marker spellings to the canonical `TODO(decision)` form in `ai/AI_ARCHITECTURE.md`, `ai/RAG_PIPELINE.md`, `ai/DIGITAL_TWIN.md`, `knowledge/KNOWLEDGE_GRAPH.md`, and `memory/MEMORY_SYSTEM.md` (marker form only, no content changes).
 
 ## [0.3.0] - 2026-07-02
 

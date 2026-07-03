@@ -249,9 +249,9 @@ Refusal example (commitment): "I cannot agree to a meeting or make any commitmen
 ## 10. Open Questions
 
 - > TODO(verify): owner directive for post-mortem twin defaults (see TWIN-27 note); requires an owner-authored document.
-- > TODO(decide): whether Trusted (P1) mode ships at launch or after a hardening period of Public and Owner modes.
-- > TODO(decide): retention policy for twin conversation transcripts (they are `Conversation` entities: default P2, but should public visitors' sessions be stored at all, and for how long?). Coordinate with [PRIVACY](../security/PRIVACY.md).
-- > TODO(decide): the exact wording of the standing disclosure statement, owner-approved, localized later.
+- > TODO(decision): whether Trusted (P1) mode ships at launch or after a hardening period of Public and Owner modes.
+- > TODO(decision): retention policy for twin conversation transcripts (they are `Conversation` entities: default P2, but should public visitors' sessions be stored at all, and for how long?). Coordinate with [PRIVACY](../security/PRIVACY.md).
+- > TODO(decision): the exact wording of the standing disclosure statement, owner-approved, localized later.
 - Should the twin proactively offer corrections if a visitor repeats a 🔴 claim as fact (gentle correction is on-mission but could feel confrontational)?
 
 ## 11. References

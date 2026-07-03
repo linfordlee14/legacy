@@ -271,9 +271,9 @@ Ingestion-to-index trace (illustrative):
 
 ## 10. Open Questions
 
-- > TODO(decide): fusion algorithm and weights for hybrid retrieval (reciprocal rank fusion vs weighted score fusion); tune on the retrieval label set.
-- > TODO(decide): retrieval confidence threshold that triggers not-in-corpus behavior, possibly stricter for the public twin than owner mode (shared question with AI_ARCHITECTURE).
-- > TODO(decide): whether reranking uses a hosted reranker model or an LLM-judge pattern at launch.
+- > TODO(decision): fusion algorithm and weights for hybrid retrieval (reciprocal rank fusion vs weighted score fusion); tune on the retrieval label set.
+- > TODO(decision): retrieval confidence threshold that triggers not-in-corpus behavior, possibly stricter for the public twin than owner mode (shared question with AI_ARCHITECTURE).
+- > TODO(decision): whether reranking uses a hosted reranker model or an LLM-judge pattern at launch.
 - > TODO(verify): pgvector index parameters (HNSW build settings) appropriate for the projected corpus size; coordinate with DATABASE_SCHEMA capacity planning.
 - Should conversations with the AI itself (Conversation entities) be retrievable by default, or opt-in, to avoid feedback loops of the system citing its own prior outputs as evidence?
 
