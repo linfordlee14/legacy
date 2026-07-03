@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
 
+import { CaptureProvider } from "@/components/CaptureProvider";
 import { EnvFooter } from "@/components/EnvFooter";
+import { SessionProvider } from "@/lib/session";
 
 import "./globals.css";
 
@@ -14,7 +16,11 @@ export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en">
       <body>
-        <main>{children}</main>
+        <SessionProvider>
+          <CaptureProvider>
+            <main>{children}</main>
+          </CaptureProvider>
+        </SessionProvider>
         <EnvFooter />
       </body>
     </html>
