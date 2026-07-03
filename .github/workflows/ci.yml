@@ -63,6 +63,21 @@ jobs:
     defaults:
       run:
         working-directory: services/api
+    # Disposable database per run (CI-09) for the schema migration tests.
+    services:
+      postgres:
+        image: pgvector/pgvector:pg16
+        env:
+          POSTGRES_USER: legacy
+          POSTGRES_PASSWORD: legacy
+          POSTGRES_DB: legacy_test
+        ports:
+          - "5432:5432"
+        options: >-
+          --health-cmd "pg_isready -U legacy"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -74,10 +89,11 @@ jobs:
         run: ruff check .
       - name: Type check (stage 2)
         run: mypy
-      - name: Unit tests (stage 3)
+      - name: Unit and migration tests (stages 3 and 4)
         run: python -m pytest
         env:
           LEGACY_ENV: local
+          LEGACY_TEST_DATABASE_URL: postgresql://legacy:legacy@localhost:5432/legacy_test
       - name: SAST, high severity blocking (stage 5)
         run: bandit -r src --severity-level high
       - name: Dependency audit (stage 6)

@@ -38,6 +38,15 @@ down:
 smoke:
 	./scripts/smoke_test.sh http://localhost:8000 local
 
+db-up:
+	docker compose up -d db
+
+migrate:
+	cd services/api && LEGACY_DATABASE_URL=$${LEGACY_DATABASE_URL:-postgresql://legacy:legacy@localhost:5432/legacy_local} .venv/bin/alembic upgrade head
+
+migrate-down:
+	cd services/api && LEGACY_DATABASE_URL=$${LEGACY_DATABASE_URL:-postgresql://legacy:legacy@localhost:5432/legacy_local} .venv/bin/alembic downgrade -1
+
 spec-check:
 	python3 scripts/check_specs.py
 

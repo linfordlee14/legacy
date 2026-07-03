@@ -7,3 +7,21 @@ services:
     env_file: infra/environments/local.env
     ports:
       - "8000:8000"
+
+  # Local database (DEP-04): Postgres with pgvector, mirroring the managed
+  # Supabase topology. The password below is a local-only convention, not a
+  # secret; staging and production URLs live in platform secret managers
+  # (DEP-18, DEP-19).
+  db:
+    image: pgvector/pgvector:pg16
+    environment:
+      POSTGRES_USER: legacy
+      POSTGRES_PASSWORD: legacy
+      POSTGRES_DB: legacy_local
+    ports:
+      - "5432:5432"
+    volumes:
+      - legacy-pgdata:/var/lib/postgresql/data
+
+volumes:
+  legacy-pgdata:

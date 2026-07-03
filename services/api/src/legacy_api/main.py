@@ -51,7 +51,8 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         """Readiness: the service can take traffic.
 
         No downstream dependencies exist yet; dependency checks are added with
-        the components that introduce them (database at MVP-003 and later).
+        the components that introduce them (the API consumes the database from
+        MVP-006 onward; the schema itself is managed by Alembic migrations).
         """
         return _health()
 
