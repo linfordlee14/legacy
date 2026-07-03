@@ -33,7 +33,7 @@ EXPECTED_TABLES = {
     "skill", "certification", "achievement", "goal", "lesson", "book", "talk",
     "article", "tag", "collection", "source", "claim", "claim_source", "edge",
     "memory_record", "embedding_chunk", "audit_log_entry", "ingestion_job",
-    "agent_run", "schema_metadata",
+    "agent_run", "schema_metadata", "personal_access_token",
 }
 
 

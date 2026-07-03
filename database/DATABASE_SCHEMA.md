@@ -53,7 +53,7 @@ Every entity table includes these columns unless its subsection states an except
 | origin_ref | entity reference | no | The IngestionJob or AgentRun that produced the row, when origin_type is ingestion or agent |
 | row_version | integer | yes | Optimistic concurrency counter, incremented on update |
 
-Exceptions: `AuditLogEntry` is append-only and omits updated_at, deleted_at, and row_version; `EmbeddingChunk` derives privacy_tier from its parent (denormalized copy, §4.6); `User`, `Role`, and `Grant` carry no privacy_tier (they are access-control rows, visible only to owner and steward surfaces).
+Exceptions: `AuditLogEntry` is append-only and omits updated_at, deleted_at, and row_version; `EmbeddingChunk` derives privacy_tier from its parent (denormalized copy, §4.6); `User`, `Role`, `Grant`, and `PersonalAccessToken` carry no privacy_tier (they are access-control rows, visible only to owner and steward surfaces).
 
 Provenance linkage rule: knowledge entities do not embed claim columns; Claims reference entities through a subject entity reference (§4.4), and Edges carry a claim reference (§4.5). This keeps facts atomic and separately tiered.
 
@@ -374,6 +374,22 @@ Keys: name unique. Roles are a small, fixed reference table; new roles require a
 | activation_condition | JSON document | no | Declarative succession or time-lock condition (used for the estate steward and P3 unsealing; semantics in [SECURITY](../security/SECURITY.md)) |
 
 Keys: unique per (user_id, role_id, scope_type, scope_ref) among non-deleted rows. Every Grant creation, change, and revocation is audited.
+
+#### PersonalAccessToken
+
+Storage for the PATs mandated by [AUTHENTICATION](../security/AUTHENTICATION.md) §4.3 and [API_SPECIFICATION](../api/API_SPECIFICATION.md) §4.5 (added as a defect fix: the credential properties were normative but had no home).
+
+| Column | Logical type | Required | Description |
+|--------|--------------|----------|-------------|
+| user_id | reference (User) | yes | The service principal this token authenticates as (user_kind service) |
+| label | short text | yes | Owner-facing name shown in token lists |
+| token_hash | short text | yes | SHA-256 of the secret; the plaintext is shown once at creation and never stored |
+| scopes | JSON document | yes | List drawn from the closed scope set of API_SPECIFICATION §4.5 |
+| expires_at | timestamp | yes | Mandatory; at most 12 months after creation (AUTHENTICATION §4.3) |
+| last_used_at | timestamp | no | Maintained on every authenticated use |
+| revoked_at | timestamp | no | Set on revocation; a revoked token never authenticates again |
+
+Keys: token_hash unique. Rules in words: every use is audited and updates last_used_at; expiry and revocation are evaluated live at the decision point so they take effect immediately; tokens confer at most the service-role ceiling P2, never P3 (ADR-09, API_SPECIFICATION §4.5).
 
 #### MemoryRecord
 | Column | Logical type | Required | Description |

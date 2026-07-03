@@ -32,6 +32,7 @@ from legacy_api.obs.logging import setup_logging
 from legacy_api.obs.metrics import Metrics
 from legacy_api.obs.tracing import TracingMiddleware
 from legacy_api.routes.claims import router as claims_router
+from legacy_api.routes.tokens import router as tokens_router
 from legacy_api.verifier import TokenVerifier, jwks_key_provider
 
 logger = logging.getLogger("legacy_api")
@@ -108,6 +109,7 @@ def create_app(
     app.add_middleware(RequestIdMiddleware)
     install_error_handlers(app)
     app.include_router(claims_router)
+    app.include_router(tokens_router)
 
     @app.get("/metrics", include_in_schema=False)
     def metrics() -> Response:

@@ -152,6 +152,9 @@ Example `/v1/ask` final payload (after streaming):
 | `GET /v1/audit` | Query the audit log | Owner, Steward |
 | `POST /v1/succession/activation` | Begin the multi-condition succession protocol (see [AUTHENTICATION](../security/AUTHENTICATION.md)); time-delayed, cancellable by the owner | Steward |
 | `GET /v1/grants`, `POST /v1/grants`, `DELETE /v1/grants/{id}` | Manage P1 access grants (scoped, time-boxed) | Owner |
+| `POST /v1/auth/tokens` | Create a personal access token; the secret is returned exactly once | Owner, step-up |
+| `GET /v1/auth/tokens` | List token metadata (label, scopes, expiry, last use; never secrets) | Owner |
+| `DELETE /v1/auth/tokens/{id}` | Revoke a token, effective immediately | Owner |
 
 ### 4.5 Machine consumer guarantees
 

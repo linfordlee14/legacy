@@ -16,6 +16,7 @@ from psycopg.rows import dict_row
 
 from legacy_api.audit import write_auth_event
 from legacy_api.config import Settings
+from legacy_api.pats import PAT_PREFIX, hash_token, lookup_pat
 from legacy_api.verifier import TokenError, TokenVerifier, VerifiedToken
 
 logger = logging.getLogger("legacy_api.auth")
@@ -87,6 +88,8 @@ class Principal:
     auth_time: int | None
     session_ref: str
     new_device: bool
+    # Set only for PAT-authenticated machine principals (AUTHENTICATION 4.3).
+    pat_scopes: tuple[str, ...] | None = None
 
 
 def _deny(status: int, code: str, message: str, retry_after: int | None = None) -> HTTPException:
@@ -118,8 +121,12 @@ async def authenticate(request: Request) -> Principal:
     if not header.startswith("Bearer "):
         raise _deny(401, "unauthenticated", "Bearer token required.")
 
+    raw = header.removeprefix("Bearer ")
+    if raw.startswith(PAT_PREFIX):
+        return await _authenticate_pat(request, raw, limiter, pool, client_key)
+
     try:
-        token: VerifiedToken = verifier.verify(header.removeprefix("Bearer "))
+        token: VerifiedToken = verifier.verify(raw)
     except TokenError:
         limiter.record_failure(client_key)
         raise _deny(401, "unauthenticated", "Token verification failed.") from None
@@ -246,6 +253,70 @@ def _auth_time_fresh(auth_time: int | None, settings: Settings) -> bool:
     if auth_time is None:
         return False
     return (time.time() - auth_time) <= settings.step_up_max_age_s
+
+
+async def _authenticate_pat(
+    request: Request,
+    secret: str,
+    limiter: FailureRateLimiter,
+    pool: Any,
+    client_key: str,
+) -> Principal:
+    """PAT authentication (AUTHENTICATION 4.3): live revocation and expiry
+    checks, last_used_at maintenance, and an audit entry on every use."""
+    token_ref = hash_token(secret)[:16]
+    request_id = request.headers.get("x-request-id")
+
+    async with pool.connection() as conn:
+        row = await lookup_pat(conn, secret)
+
+        async def denied(code: str, status: int = 401) -> HTTPException:
+            limiter.record_failure(client_key)
+            await write_auth_event(
+                conn,
+                action="login_denied",
+                actor_id=str(row["user_id"]) if row else None,
+                payload={"reason": code, "kind": "pat"},
+                token_ref=token_ref,
+                request_id=request_id,
+            )
+            await conn.commit()
+            return _deny(status, "unauthenticated" if status == 401 else "forbidden", "Denied.")
+
+        if row is None:
+            raise await denied("unknown_token")
+        if row["revoked_at"] is not None:
+            raise await denied("pat_revoked")
+        if row["expires_at"].timestamp() <= time.time():
+            raise await denied("pat_expired")
+        if row["account_status"] != "active":
+            raise await denied("account_inactive", status=403)
+
+        await conn.execute(
+            "UPDATE personal_access_token SET last_used_at = now() WHERE id = %s",
+            (row["token_id"],),
+        )
+        await write_auth_event(
+            conn,
+            action="pat_use",
+            actor_id=str(row["user_id"]),
+            payload={"kind": "pat"},
+            token_ref=token_ref,
+            request_id=request_id,
+        )
+
+    limiter.reset(client_key)
+    return Principal(
+        user_id=str(row["user_id"]),
+        email=row["email"],
+        display_name=row["display_name"],
+        is_owner=False,
+        mfa_satisfied=False,
+        auth_time=None,
+        session_ref=token_ref,
+        new_device=False,
+        pat_scopes=tuple(row["scopes"]),
+    )
 
 
 async def authenticate_optional(request: Request) -> Principal | None:

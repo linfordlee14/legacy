@@ -117,6 +117,7 @@ class AuthzContext:
     user_id: str | None
     scopes: tuple[GrantScope, ...] = field(default_factory=tuple)
     agent_name: str | None = None  # set when an agent acts on behalf (4.5)
+    api_scopes: tuple[str, ...] = ()  # PAT scopes for machine principals (4.1)
 
     @property
     def role_key(self) -> str:
@@ -152,6 +153,21 @@ async def resolve_context(
     """
     if principal is None:
         return PUBLIC_CONTEXT
+    if principal.pat_scopes is not None:
+        # Machine principals: ceiling per PAT scope, at most P2, never P3
+        # (AUTHORIZATION 4.1; API_SPECIFICATION 4.5).
+        if "read:private" in principal.pat_scopes:
+            ceiling = "P2"
+        elif "read:trusted" in principal.pat_scopes:
+            ceiling = "P1"
+        else:
+            ceiling = "P0"
+        return AuthzContext(
+            kind="machine",
+            ceiling=ceiling,
+            user_id=principal.user_id,
+            api_scopes=principal.pat_scopes,
+        )
     if principal.is_owner:
         return AuthzContext(kind="owner", ceiling="P3", user_id=principal.user_id)
 
@@ -258,8 +274,14 @@ async def decide(
     if ctx.agent_name is not None and action in AGENT_FORBIDDEN:
         return Decision(allow=False, reason="agent_forbidden_action")
 
-    allowed_actions = ROLE_ACTIONS.get(ctx.role_key, set())
-    if action not in allowed_actions:
+    allowed = action in ROLE_ACTIONS.get(ctx.role_key, set())
+    if not allowed and ctx.kind == "machine":
+        # PAT scopes widen the machine baseline (API_SPECIFICATION 4.5).
+        if action in (Action.CONTENT_CREATE, Action.CONTENT_UPDATE):
+            allowed = "write:content" in ctx.api_scopes
+        elif action is Action.AUDIT_READ:
+            allowed = "admin" in ctx.api_scopes
+    if not allowed:
         return Decision(allow=False, reason="role_lacks_action")
 
     if resource is not None:

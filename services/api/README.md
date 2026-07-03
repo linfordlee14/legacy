@@ -65,6 +65,14 @@ every event. Configure with `LEGACY_OIDC_ISSUER` and `LEGACY_OIDC_AUDIENCE`
 Sensitive endpoints use the `require_step_up` dependency
 (AUTHENTICATION 4.3: authentication event within 10 minutes).
 
+Personal access tokens (AUTHENTICATION 4.3, API_SPECIFICATION 4.5): minted
+at `POST /v1/auth/tokens` (owner, step-up; the secret is shown exactly
+once), listed as metadata, revoked immediately via DELETE. PATs authenticate
+as dedicated service principals, are stored hash-only, expire within 12
+months, are audited on every use, and confer a scope-derived ceiling capped
+at P2 (never P3); `write:content` and `admin` scopes widen the machine
+action set. Machines cannot pass step-up.
+
 ## Run locally
 
 ```
