@@ -4,9 +4,23 @@ The Legacy platform API service (FastAPI). Governing specifications:
 `architecture/MASTER_ARCHITECTURE.md`, `api/API_SPECIFICATION.md`,
 `deployment/DEPLOYMENT.md`.
 
-Current scope (BUILD_ORDER steps 1-4): service skeleton, health endpoints,
-the full schema migration, and authentication. The `/v1` conventions layer
-arrives at step 6 (MVP-007).
+Current scope (BUILD_ORDER steps 1-5): service skeleton, health endpoints,
+the full schema migration, authentication, and the authorization core. The
+`/v1` conventions layer arrives at step 6 (MVP-007).
+
+## Authorization (security/AUTHORIZATION.md)
+
+`policy.py` is the single decision service behind every enforcement point
+(4.4): deny by default, role permission matrix (4.2), privacy-tier ceilings
+intersected with live grants (revocation is immediate), scoped trusted
+access via Grant rows and membership edges (4.3), and agent identities that
+inherit the invoking principal's ceiling with tier/grant/seal actions hard
+denied and per-agent tool allowlists failing closed (4.5). Every denial and
+every sensitive allow is audited with the policy version (4.7). Reads go
+through `read_or_not_found`, which makes missing rows and above-ceiling rows
+byte-identical (no existence leaks). Endpoints resolve their context with
+`resolve_context` plus `authenticate` or `authenticate_optional` (the public
+visitor path).
 
 ## Authentication (security/AUTHENTICATION.md)
 

@@ -248,6 +248,16 @@ def _auth_time_fresh(auth_time: int | None, settings: Settings) -> bool:
     return (time.time() - auth_time) <= settings.step_up_max_age_s
 
 
+async def authenticate_optional(request: Request) -> Principal | None:
+    """Like authenticate, but an absent bearer token resolves to None (the
+    public visitor context of AUTHORIZATION 4.1). Present-but-invalid tokens
+    are still rejected: anonymous is a choice, a bad credential is an error.
+    """
+    if not request.headers.get("authorization", ""):
+        return None
+    return await authenticate(request)
+
+
 async def require_step_up(
     request: Request, principal: Annotated[Principal, Depends(authenticate)]
 ) -> Principal:
