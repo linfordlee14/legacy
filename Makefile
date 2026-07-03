@@ -51,6 +51,14 @@ migrate-down:
 test-alert:
 	cd services/api && LEGACY_ENV=local .venv/bin/python -m legacy_api.obs.alerts
 
+# Encrypted backup of the local database (BACKUP_AND_RECOVERY 4.2 to 4.4).
+backup:
+	LEGACY_BACKUP_DATABASE_URL=$${LEGACY_BACKUP_DATABASE_URL:-postgresql://legacy:legacy@localhost:5432/legacy_local} ./scripts/backup/backup.sh
+
+# Runbook 2 drill: backup, restore to scratch, verify (BACKUP_AND_RECOVERY 4.7).
+restore-drill:
+	./scripts/backup/restore_drill.sh
+
 spec-check:
 	python3 scripts/check_specs.py
 

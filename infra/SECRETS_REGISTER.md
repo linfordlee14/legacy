@@ -14,6 +14,13 @@ Owner of every secret: Linford Musiyambodza. Rotation cadence: at most
 | Name | Purpose | Environments | Stored in | Last rotated |
 |------|---------|--------------|-----------|--------------|
 | LEGACY_DATABASE_URL | Postgres connection for migrations and (later) the API | staging, production | Platform secret manager per environment; local uses the non-secret docker-compose convention value | pending provisioning |
+| LEGACY_BACKUP_DATABASE_URL | Dedicated read-only backup role credential, distinct from the app credential (MVP-009) | staging, production | Platform secret manager per environment | pending provisioning |
+| Backup RSA private key | Decrypts backups; owner-held with dual-location escrow, NEVER in platform secret managers (DEP-22, BACKUP_AND_RECOVERY 4.4) | all | Owner escrow only | pending owner key ceremony |
+
+The backup RSA PUBLIC key (`LEGACY_BACKUP_PUBLIC_KEY_FILE`) is non-secret and
+lives in versioned environment configuration once the owner generates the
+pair. Rotation: generate a new pair, re-escrow, update the public key;
+historical backups remain readable with the escrowed prior private key.
 
 Rotation procedure for LEGACY_DATABASE_URL: rotate the database password in
 Supabase, update the secret manager value, redeploy; the old credential is
