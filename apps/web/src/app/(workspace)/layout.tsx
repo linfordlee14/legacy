@@ -1,11 +1,12 @@
 import type { ReactNode } from "react";
 
+import { SearchShortcut } from "@/components/SearchShortcut";
 import { WorkspaceNav } from "@/components/WorkspaceNav";
 
 /**
  * Workspace shell (UI_UX 4.1 and 4.2): skip link, persistent left navigation,
  * and the main content region. Capture (button and c shortcut) is provided
- * globally by the root layout.
+ * globally by the root layout; `/` reaches search from any workspace screen.
  */
 export default function WorkspaceLayout({ children }: { children: ReactNode }) {
   return (
@@ -13,6 +14,7 @@ export default function WorkspaceLayout({ children }: { children: ReactNode }) {
       <a href="#workspace-main" className="skip-link">
         Skip to content
       </a>
+      <SearchShortcut />
       <WorkspaceNav />
       <div id="workspace-main" className="workspace-main">
         {children}

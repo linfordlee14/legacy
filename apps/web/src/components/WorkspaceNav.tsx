@@ -13,6 +13,7 @@ const AREAS = [
   { href: "/dashboard", label: "Dashboard" },
   { href: "/inbox", label: "Capture inbox" },
   { href: "/library", label: "Library" },
+  { href: "/search", label: "Search" },
   { href: "/settings", label: "Settings" },
 ];
 

@@ -345,3 +345,95 @@ section {
 .provenance li {
   padding: var(--space-1) 0;
 }
+
+/* Search screen (MVP-018; UI_UX 4.1; ACCESSIBILITY 4.3, 4.5) */
+
+.search-form {
+  display: grid;
+  gap: var(--space-2);
+  margin-bottom: var(--space-3);
+}
+
+.search-row {
+  display: flex;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+}
+
+.search-row input[type="search"] {
+  flex: 1;
+  min-width: 16rem;
+}
+
+.mode-group {
+  border: 1px solid var(--surface-raised);
+  border-radius: 8px;
+  padding: var(--space-2);
+  display: flex;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+}
+
+.mode-option {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.search-status {
+  min-height: 1.5rem;
+}
+
+.degraded-banner {
+  border: 1px solid var(--warning);
+  border-radius: 8px;
+  padding: var(--space-2);
+  background: var(--surface);
+}
+
+.search-results {
+  list-style: none;
+  padding: 0;
+  display: grid;
+  gap: var(--space-3);
+}
+
+.search-result article {
+  border: 1px solid var(--surface-raised);
+  border-radius: 8px;
+  padding: var(--space-2);
+}
+
+.snippet mark {
+  background: var(--surface-raised);
+  color: inherit;
+  text-decoration: underline;
+  text-decoration-style: dotted;
+  padding: 0 0.1rem;
+}
+
+.result-claims {
+  list-style: none;
+  padding: 0;
+  margin-top: var(--space-2);
+}
+
+.result-claims li {
+  padding: var(--space-1) 0;
+}
+
+.citation-chip .chip-toggle {
+  font-size: 0.85rem;
+  padding: 0.1rem 0.5rem;
+  border-radius: 999px;
+}
+
+.citation-chip .chip-detail {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  margin-left: var(--space-1);
+  padding: 0.1rem 0.4rem;
+  border: 1px dashed var(--text-secondary);
+  border-radius: 8px;
+}
