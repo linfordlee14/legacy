@@ -1,7 +1,7 @@
 # Legacy implementation workspace. Spec anchors: deployment/DEPLOYMENT.md,
 # roadmap/BUILD_ORDER.md. Run `make install` once, then `make test`.
 
-.PHONY: install install-api install-web dev-api dev-web test test-api test-web build up down smoke spec-check lint audit ci seed seed-docs reindex
+.PHONY: install install-api install-web dev-api dev-web test test-api test-web build up down smoke spec-check lint audit ci seed seed-docs reindex perf-baseline
 
 install: install-api install-web
 
@@ -78,6 +78,11 @@ backup:
 # Runbook 2 drill: backup, restore to scratch, verify (BACKUP_AND_RECOVERY 4.7).
 restore-drill:
 	./scripts/backup/restore_drill.sh
+
+# Record the MVP-019 performance baseline (NFR 4.1) against a DISPOSABLE
+# database; results belong in infra/PERFORMANCE_BASELINE.md.
+perf-baseline:
+	LEGACY_ENV=$${LEGACY_ENV:-local} LEGACY_PERF_DATABASE_URL=$${LEGACY_PERF_DATABASE_URL:-postgresql://legacy:legacy@localhost:5432/legacy_perf} services/api/.venv/bin/python scripts/perf/measure_baseline.py
 
 spec-check:
 	python3 scripts/check_specs.py
