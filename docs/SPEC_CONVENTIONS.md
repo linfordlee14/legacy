@@ -111,7 +111,7 @@ Specs use these entity names exactly (singular, PascalCase). The authoritative a
 
 **Knowledge entities:** `Person`, `Organization`, `Project`, `Artifact` (document, photo, video, presentation, code snapshot), `Event`, `Idea`, `Note`, `JournalEntry`, `Conversation` (AI conversation), `Skill`, `Certification`, `Achievement`, `Goal`, `Lesson`, `Book`, `Talk`, `Article`, `Source`, `Claim`, `Tag`, `Collection`, `Edge` (typed relationship between entities).
 
-**System entities:** `User`, `Role`, `Grant`, `PersonalAccessToken`, `MemoryRecord`, `EmbeddingChunk`, `AuditLogEntry`, `IngestionJob`, `AgentRun`.
+**System entities:** `User`, `Role`, `Grant`, `PersonalAccessToken`, `Revision`, `MemoryRecord`, `EmbeddingChunk`, `AuditLogEntry`, `IngestionJob`, `AgentRun`.
 
 **Provenance model:** a `Claim` is an atomic factual statement with a confidence tier (`verified`, `self_reported`, `flagged`), linked to one or more `Source` records. The Verification Engine and Citation Engine operate on Claims and Sources. This is the direct productization of MASTER_CONTEXT §0.
 

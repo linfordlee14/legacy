@@ -17,6 +17,9 @@ This file is exempt from the 12-section specification structure per [SPEC_CONVEN
 
 ### Added
 
+- `database/DATABASE_SCHEMA.md` §4.6: `Revision` system entity (SPEC_CONVENTIONS §6 entity list updated), and the §4.8 redaction rule now strikes Revision snapshots in the same transaction. Defect: API_SPECIFICATION §4.4 (`GET /v1/{collection}/{id}/revisions`), UI_UX (autosave revision history; soft delete with undo), and FEATURE_SPECIFICATIONS F11 (last-write-wins with revision history) all made revision history normative, but no storage entity existed; DATABASE_SCHEMA §5 requires a spec change before any new table.
+- `api/API_SPECIFICATION.md` §4.4: `POST /v1/{collection}/{id}/restore` (undo a soft delete while the row is retained per DATABASE_SCHEMA §4.8). Defect: soft delete with undo was normative (UI_UX destructive-action rules; NFR-022; MVP-015 acceptance) but the contract offered no undo surface.
+
 - `database/DATABASE_SCHEMA.md` §4.6: `PersonalAccessToken` system entity (and the §4.2 exception list plus the SPEC_CONVENTIONS §6 entity list updated). Defect: AUTHENTICATION §4.3 and API_SPECIFICATION §4.5 mandate scoped, expiring, revocable, audited PATs, but no entity existed to store them; DATABASE_SCHEMA §5 requires a spec change before any new table.
 - `api/API_SPECIFICATION.md` §4.4: personal access token lifecycle endpoints (create with step-up returning the secret once, metadata listing, immediate revocation). Defect: PATs were normative in §4.1 and §4.5 with no owner-operable lifecycle surface.
 

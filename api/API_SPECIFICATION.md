@@ -81,6 +81,7 @@ Every response object that contains factual content includes a `provenance` bloc
 | `GET /v1/{collection}/{id}` | Fetch one item with provenance | Per item tier |
 | `PATCH /v1/{collection}/{id}` | Update; tier changes require the explicit `tier_change` sub-action with confirmation semantics | Owner |
 | `DELETE /v1/{collection}/{id}` | Soft delete; permanent erasure only via the redaction workflow | Owner |
+| `POST /v1/{collection}/{id}/restore` | Undo a soft delete while the row is retained (90-day window per [DATABASE_SCHEMA](../database/DATABASE_SCHEMA.md) §4.8) | Owner |
 | `GET /v1/{collection}/{id}/revisions` | Revision history | Owner |
 
 #### Ingestion

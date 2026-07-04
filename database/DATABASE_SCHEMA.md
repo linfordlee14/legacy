@@ -439,6 +439,20 @@ Keys: unique per (entity_type, entity_id, chunk_index, embedding_model_version) 
 
 Keys: sequence_number unique. Append-only per ADR-11: no updates, no deletes, exceptions to base fields per §4.2. Tier note in words: audit entries about P3 subjects are themselves readable only by the owner (and steward after activation).
 
+#### Revision
+
+Storage for the revision history mandated by [API_SPECIFICATION](../api/API_SPECIFICATION.md) §4.4 (`GET /v1/{collection}/{id}/revisions`), the autosave revision history and soft-delete-with-undo behaviors of [UI_UX](../ui/UI_UX.md), and the last-write-wins concurrency rule of [FEATURE_SPECIFICATIONS](../specs/FEATURE_SPECIFICATIONS.md) F11 (added as a defect fix: revision history was normative in three specifications but had no storage entity).
+
+| Column | Logical type | Required | Description |
+|--------|--------------|----------|-------------|
+| entity_type | short text | yes | Entity name of the revised row (SPEC_CONVENTIONS §6 vocabulary) |
+| entity_id | identifier | yes | The revised row |
+| row_version | integer | yes | The version number this revision preserves (the row's row_version before the change displaced it) |
+| change_kind | enum (update, tier_change) | yes | What displaced this version; expansion is additive per §4.8 |
+| snapshot | JSON document | yes | The content-bearing columns exactly as they were before the change; the shape per entity is the editable-field set documented in API_SPECIFICATION §4.4 plus privacy_tier |
+
+Base-field exceptions per §4.2: no updated_at, deleted_at, privacy_tier, origin fields, or row_version; a revision is an immutable point-in-time record whose created_by is the editor whose change displaced the preserved version. Keys: unique per (entity_type, entity_id, row_version). Rules in words: revisions accept no updates and no deletes except through the redaction workflow, enforced by a database guard the redaction path explicitly authorizes (the claim tier guard mechanism); access is owner-only at the service layer because snapshots carry full content; soft-deleting or restoring a row writes no revision (the row itself is preserved) but is audited.
+
 #### IngestionJob
 | Column | Logical type | Required | Description |
 |--------|--------------|----------|-------------|
@@ -481,7 +495,7 @@ Keys: none. Relationships: every entity an agent creates carries origin_ref to t
 ### 4.8 Data lifecycle
 
 - **Soft delete.** Setting deleted_at hides a row from every default read path (API, retrieval, graph, export). Soft-deleted rows are retained for a 90-day undo window, then eligible for purge by a scheduled job, except entities referenced by Claims or audit entries, which are retained until redacted. Embeddings of soft-deleted parents are excluded from search immediately.
-- **Redaction.** Redaction is the irreversible removal of content while preserving structure: content columns are replaced with a fixed tombstone marker, associated EmbeddingChunks are hard-deleted in the same transaction, Object Storage originals are deleted, and an AuditLogEntry records the redaction with a reason but never the removed content. The row id and its Edges survive as tombstones so history stays navigable. Redaction of a MemoryRecord parent triggers child re-review (§4.6).
+- **Redaction.** Redaction is the irreversible removal of content while preserving structure: content columns are replaced with a fixed tombstone marker, associated EmbeddingChunks are hard-deleted in the same transaction, Revision snapshots for the entity are struck in that same transaction (their snapshot replaced by the tombstone marker), Object Storage originals are deleted, and an AuditLogEntry records the redaction with a reason but never the removed content. The row id and its Edges survive as tombstones so history stays navigable. Redaction of a MemoryRecord parent triggers child re-review (§4.6).
 - **Retention.** AuditLogEntry rows are retained indefinitely (ADR-11) with cold archival to Object Storage in vault-compatible form after a configurable horizon. Conversations default to indefinite retention at P2; the owner may set per-channel retention rules. IngestionJob and AgentRun operational rows are retained at least as long as any row whose origin_ref points to them.
 - **Schema migration and versioning.** The schema carries an explicit schema_version recorded in a small metadata table (described, not defined). Migrations follow expand and contract: additive first (new columns nullable or defaulted), dual-read window, contraction only after the Vault export format and API have caught up. Enum expansion is additive; enum value removal requires a deprecation cycle mirroring the API policy. Every migration ships in the same release as its Vault format update (ADR-12 consequence) and a CHANGELOG entry.
 - **Decades-scale format longevity.** Column types are restricted to widely portable forms (text, integers, decimals, timestamps, JSON, vectors); no proprietary extensions beyond pgvector, which is isolated behind the Retrieval Service seam (ADR-04). Canonical content is Markdown (ADR-13). An annual longevity drill restores the latest backup and opens the latest Vault bundle on a clean machine; failures are treated as release blockers (see [BACKUP_AND_RECOVERY](../deployment/BACKUP_AND_RECOVERY.md)).

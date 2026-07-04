@@ -1,6 +1,7 @@
 """Read endpoints for captured content collections (API_SPECIFICATION 4.4:
-content entities; the read subset serving the workspace shell). Writes go
-through ingestion; editing arrives with revision support (MVP-015).
+content entities; the read subset serving the workspace shell). Writes enter
+through ingestion; edits, soft delete with undo, and revision history live
+in content_edit (MVP-015).
 
 Every response is tier-filtered through the policy service; single reads use
 the uniform not_found path and carry the 4.3 provenance block.
@@ -36,11 +37,14 @@ from legacy_api.provenance import provenance_for_entity
 
 router = APIRouter(prefix="/v1", tags=["content"])
 
+# editable: the PATCH field set (API_SPECIFICATION 4.4); the Revision
+# snapshot shape is exactly this set plus privacy_tier (DATABASE_SCHEMA 4.6).
 COLLECTIONS: dict[str, dict[str, Any]] = {
     "notes": {
         "table": "note",
         "entity_type": "Note",
         "columns": "id, title, body, note_context, privacy_tier, created_at, updated_at",
+        "editable": ("title", "body", "note_context"),
     },
     "artifacts": {
         "table": "artifact",
@@ -49,6 +53,9 @@ COLLECTIONS: dict[str, dict[str, Any]] = {
             "id, title, artifact_type, mime_type, byte_size, extraction_status, "
             "canonical_markdown, privacy_tier, created_at, updated_at"
         ),
+        # Originals are immutable (FR-DATA-003); the owner may correct the
+        # derived extraction text and the title, never the stored bytes.
+        "editable": ("title", "canonical_markdown"),
     },
 }
 

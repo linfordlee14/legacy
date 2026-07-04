@@ -4,12 +4,29 @@ The Legacy platform API service (FastAPI). Governing specifications:
 `architecture/MASTER_ARCHITECTURE.md`, `api/API_SPECIFICATION.md`,
 `deployment/DEPLOYMENT.md`.
 
-Current scope (BUILD_ORDER steps 1-10, 13, and 14): service skeleton,
+Current scope (BUILD_ORDER steps 1-10 and 13-15): service skeleton,
 health endpoints, the full schema migration, authentication with PATs, the
 authorization core, the `/v1` conventions layer with the claims resource,
 the observability baseline, the ingestion pipeline for documents and
-notes, the MASTER_CONTEXT seed import, and the owner document batch
-import.
+notes, the MASTER_CONTEXT seed import, the owner document batch import,
+and revision history with soft delete and undo.
+
+## Revision history and soft delete (MVP-015; DATABASE_SCHEMA 4.6, 4.8)
+
+`PATCH /v1/{collection}/{id}` edits the editable field set per collection
+(notes: title, body, note_context; artifacts: title and the derived
+canonical_markdown, never the stored original). Every edit preserves the
+displaced version as an immutable Revision row in the same transaction;
+`GET .../revisions` lists them owner-only, newest first. Privacy tier
+moves require the explicit `tier_change` sub-action with a fresh
+authentication event and stay within P0 to P2 (P3 sealing belongs to the
+journal workflow). `DELETE` is soft per NFR-022: the row and content
+survive, hidden from every default read immediately, reversible via
+`POST .../restore` while retained (90-day window; permanent erasure only
+via the post-MVP redaction workflow). All mutations honor Idempotency-Key,
+flow through the policy service, and write audit entries. Revision rows
+are guarded in the database: updates and deletes raise unless the
+redaction workflow explicitly authorizes them.
 
 ## Owner document batch (MVP-014; roadmap Phase 1 exit criterion 5)
 
