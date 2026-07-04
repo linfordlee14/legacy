@@ -5,7 +5,7 @@
 |-------|-------|
 | Status | Draft |
 | Owner | Linford Musiyambodza |
-| Last updated | 2026-07-02 |
+| Last updated | 2026-07-04 |
 
 All notable changes to this specification repository are documented in this file.
 
@@ -14,6 +14,16 @@ The format is based on [Keep a Changelog 1.1.0](https://keepachangelog.com/en/1.
 This file is exempt from the 12-section specification structure per [SPEC_CONVENTIONS](docs/SPEC_CONVENTIONS.md).
 
 ## [Unreleased]
+
+Nothing yet.
+
+## [0.4.0] - 2026-07-04
+
+Implementation-phase specification synchronization (MVP-023), cut at the
+v0.2.0-alpha implementation milestone (BUILD_ORDER steps 1 to 21 complete;
+release notes in `infra/releases/v0.2.0-alpha.md`). Every entry below was
+disclosed at the step that discovered it; the implementation carries zero
+undocumented deviations.
 
 ### Added
 
