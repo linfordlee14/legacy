@@ -95,6 +95,7 @@ async def import_documents(
     *,
     tier: str | None = None,
     extensions: set[str] | None = None,
+    router: Any = None,
 ) -> dict[str, Any]:
     """Run one batch through the ingestion pipeline; returns the run summary."""
     tier_value = validate_tier(tier)
@@ -155,8 +156,10 @@ async def import_documents(
         )
 
     # The existing pipeline: extraction, checksum dedup, review flags,
-    # per-item statuses, completion audit (MVP-010).
-    await process_job(pool, storage, job_id)
+    # per-item statuses, completion audit (MVP-010). With a router, stored
+    # rows are chunk-indexed on the same pass (MVP-016); without one they
+    # await `make reindex`.
+    await process_job(pool, storage, job_id, router)
 
     async with pool.connection() as conn:
         async with conn.cursor(row_factory=dict_row) as cur:
@@ -229,6 +232,12 @@ async def _amain(argv: list[str] | None = None) -> int:
     pool = create_pool(settings.database_url)
     await pool.open()
     storage = LocalObjectStorage(Path(settings.storage_dir))
+    router = None
+    if settings.gemini_api_key:
+        from legacy_api.ai.gemini import GeminiEmbeddingProvider
+        from legacy_api.ai.router import ModelRouter
+
+        router = ModelRouter(GeminiEmbeddingProvider(settings.gemini_api_key))
     try:
         summary = await import_documents(
             pool,
@@ -238,6 +247,7 @@ async def _amain(argv: list[str] | None = None) -> int:
             [Path(raw).resolve() for raw in args.paths],
             tier=args.tier,
             extensions=_parse_extensions(args.ext),
+            router=router,
         )
     except ValueError as exc:
         print(str(exc), file=sys.stderr)

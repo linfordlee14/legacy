@@ -24,6 +24,10 @@ class Settings(BaseSettings):
     # Database (DEP-18: URL arrives via environment or secret manager only).
     database_url: str | None = None
 
+    # Embedding provider key (ADR-16; DEP-18: arrives via environment or
+    # secret manager only). Absent means embedding writes queue (RAG-08).
+    gemini_api_key: str | None = None
+
     # OIDC resource-server settings (AUTHENTICATION 4.1: managed provider,
     # Supabase Auth as the default decision). Issuer and audience are
     # non-secret configuration; there is no client secret in this service.

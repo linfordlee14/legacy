@@ -89,7 +89,7 @@ QUERY SIDE (read path)
 
 ### 4.4 Embedding and indexing
 
-**RAG-06.** Embeddings are produced by the platform embedding model chosen under the AI architecture's embedding strategy (open TODO there); vectors are stored in PostgreSQL with pgvector per the baseline default in [SPEC_CONVENTIONS §9](../docs/SPEC_CONVENTIONS.md).
+**RAG-06.** Embeddings are produced by the platform embedding model chosen under the AI architecture's embedding strategy (decided: MASTER_ARCHITECTURE ADR-16, `gemini-embedding-001` at 1536 dimensions); vectors are stored in PostgreSQL with pgvector per the baseline default in [SPEC_CONVENTIONS §9](../docs/SPEC_CONVENTIONS.md).
 
 **RAG-07.** Two indexes are maintained over the same chunk store: (a) an approximate nearest neighbor vector index (HNSW-class) for semantic retrieval, and (b) a lexical full-text index with stemming and exact-phrase support for keyword retrieval. Hybrid search requires both to be healthy; index health is monitored per [OBSERVABILITY](../deployment/OBSERVABILITY.md).
 

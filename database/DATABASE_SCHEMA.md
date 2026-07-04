@@ -418,6 +418,9 @@ Keys: none natural. Consolidation lineage rule in words: a consolidated record m
 | content_hash | short text | yes | Hash of chunk_text for cache-first re-embedding (cost control) |
 | embedding | vector | yes | The embedding; conceptually a fixed-dimension array whose dimension is a property of the model version, never mixed within one index |
 | embedding_model_version | short text | yes | Exact model and version |
+| heading_path | short text | no | Heading or symbol path within the source for citation locators (RAG-05, RAG-24; added as a defect fix) |
+| language | short text | no | Content language when known (RAG-05; populated once language detection ships in ingestion) |
+| injection_flag | boolean | yes | Injection-flag status per RAG-05; defaults false, set by the Curation Agent when it ships |
 | privacy_tier | enum (P0-P3) | yes | Denormalized copy of the parent entity's tier so tier predicates push into vector queries; recomputed synchronously whenever the parent tier changes |
 | superseded_by | reference (EmbeddingChunk) | no | Set when re-chunking or re-embedding replaces this row |
 

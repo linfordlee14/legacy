@@ -4,12 +4,35 @@ The Legacy platform API service (FastAPI). Governing specifications:
 `architecture/MASTER_ARCHITECTURE.md`, `api/API_SPECIFICATION.md`,
 `deployment/DEPLOYMENT.md`.
 
-Current scope (BUILD_ORDER steps 1-10 and 13-15): service skeleton,
+Current scope (BUILD_ORDER steps 1-10 and 13-16): service skeleton,
 health endpoints, the full schema migration, authentication with PATs, the
 authorization core, the `/v1` conventions layer with the claims resource,
 the observability baseline, the ingestion pipeline for documents and
 notes, the MASTER_CONTEXT seed import, the owner document batch import,
-and revision history with soft delete and undo.
+revision history with soft delete and undo, and the chunk store with
+embeddings and lexical indexing.
+
+## Chunking, embeddings, and indexes (MVP-016; RAG_PIPELINE 4.2-4.4; ADR-16)
+
+Stored notes and artifacts are chunked heading-aware (RAG-04; sizes are
+configuration) and embedded through the Model Router (`ai/`): the single
+choke point of ADR-06, pinned by ADR-16 to exactly `gemini-embedding-001`
+at 1536 dimensions (`LEGACY_GEMINI_API_KEY` via the environment; never an
+auto-tracking alias, AIA-07). Every EmbeddingChunk row carries the RAG-05
+provenance packet: parent reference, ordinal, heading path for citation
+locators, inherited privacy tier (re-tiering propagates in the same
+transaction, RAG-32), content hash, injection-flag status, and the exact
+model version. Unchanged sources are no-ops and identical text reuses
+cached vectors by content hash (RAG-03; cost control); text changes
+supersede the old generation, never delete it. Two indexes serve the
+store (RAG-07): a version-scoped HNSW cosine index (vectors from
+different versions are never compared, AIA-11) and a lexical full-text
+index. Retrieval primitives (`rag/retrieval.py`) apply the caller's tier
+predicate inside the store (RAG-12) and exclude soft-deleted parents
+immediately; the fused query pipeline and search API arrive with MVP-017.
+When the embedding provider is unreachable, ingestion continues and
+entities queue for `make reindex`, counted by the searchable-lag metric
+(RAG-08); `make reindex` is also the rebuild-from-source drill (NFR-024).
 
 ## Revision history and soft delete (MVP-015; DATABASE_SCHEMA 4.6, 4.8)
 

@@ -167,7 +167,10 @@ async def create_job(
     result = serialize_job(job)
     if idem_key:
         store.store(idem_key, fp, 201, result)
-    background.add_task(process_job, pool, storage, str(job["id"]))
+    background.add_task(
+        process_job, pool, storage, str(job["id"]),
+        request.app.state.model_router, request.app.state.metrics,
+    )
     return JSONResponse(result, status_code=201)
 
 
@@ -267,5 +270,8 @@ async def retry_job(
             payload={"event": "retry"},
             request_id=getattr(request.state, "request_id", None),
         )
-    await process_job(request.app.state.pool, request.app.state.storage, job_id)
+    await process_job(
+        request.app.state.pool, request.app.state.storage, job_id,
+        request.app.state.model_router, request.app.state.metrics,
+    )
     return serialize_job(await _load_job(request, job_id))

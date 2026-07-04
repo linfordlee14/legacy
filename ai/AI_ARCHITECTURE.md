@@ -99,9 +99,7 @@ Requirement IDs below are document-scoped (`AIA-##`). They trace upward to the F
 
 ### 4.3 Embedding strategy
 
-**AIA-09.** Embedding model choice is an open decision:
-
-> TODO(decision): select the embedding model (provider-hosted vs open-weight self-hosted), balancing quality, cost per million tokens, dimension size, and decades-long availability. Decision to be recorded as an ADR in [MASTER_ARCHITECTURE](../architecture/MASTER_ARCHITECTURE.md).
+**AIA-09.** Embedding model choice: decided and recorded as [MASTER_ARCHITECTURE](../architecture/MASTER_ARCHITECTURE.md) ADR-16. The platform embedding model is pinned to exactly `gemini-embedding-001` at `output_dimensionality` 1536 (embedding model version string `gemini-embedding-001:1536`, vectors L2-normalized, cosine distance), provider-hosted within the ADR-06 provider set. Any change of model or dimension follows AIA-08 and AIA-12 and requires a new ADR.
 
 **AIA-10.** Dimensioning: the chosen model SHOULD produce vectors of 1536 dimensions or fewer to keep pgvector index size and query cost manageable; if the model supports Matryoshka-style truncation, the stored dimension is fixed in configuration and recorded with the index. One embedding space is used platform-wide per embedding model version; text and transcript modalities share it, image embeddings (if adopted) form a separate named space.
 

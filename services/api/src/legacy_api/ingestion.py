@@ -61,10 +61,17 @@ def checksum_of(data: bytes) -> str:
 
 
 async def process_job(
-    pool: AsyncConnectionPool, storage: ObjectStorage, job_id: str
+    pool: AsyncConnectionPool,
+    storage: ObjectStorage,
+    job_id: str,
+    router: Any = None,
+    metrics: Any = None,
 ) -> None:
     """Run one processing pass over a job's pending items (also the retry
-    pass: review and failed items are reprocessed, FR-ING-007)."""
+    pass: review and failed items are reprocessed, FR-ING-007). With a
+    Model Router present, stored rows are chunk-indexed on the same pass
+    (RAG-01 handoff; RAG-08 freshness); without one they stay queued for
+    `make reindex`, and the gap is logged, never silent."""
     async with pool.connection() as conn:
         async with conn.cursor(row_factory=dict_row) as cur:
             await cur.execute(
@@ -131,6 +138,31 @@ async def process_job(
             subject_id=job_id,
             payload={"status": status, "review_count": review},
         )
+
+        # RAG write path: chunk-index what this pass stored (MVP-016).
+        from legacy_api.rag.indexer import index_entity_or_queue
+
+        stored = [
+            ("Note", item["note_id"]) if item["type"] == "note"
+            else ("Artifact", item["artifact_id"])
+            for item in items
+            if item.get("status") == "stored"
+            and (item.get("note_id") or item.get("artifact_id"))
+        ]
+        if router is None:
+            if stored:
+                logger.info(
+                    "chunk indexing deferred to reindex (no model router)",
+                    extra={"job_id": job_id, "entity_count": len(stored)},
+                )
+                if metrics is not None:
+                    metrics.record_embedding_deferred()
+        else:
+            with span("rag.index", entity_count=len(stored)):
+                for entity_type, entity_id in stored:
+                    await index_entity_or_queue(
+                        conn, router, entity_type, str(entity_id), metrics=metrics
+                    )
 
 
 async def _process_note(

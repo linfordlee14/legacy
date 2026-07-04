@@ -16,6 +16,8 @@ from fastapi.responses import Response
 from pydantic import BaseModel
 
 from legacy_api import __version__
+from legacy_api.ai.gemini import GeminiEmbeddingProvider
+from legacy_api.ai.router import EmbeddingProvider, ModelRouter
 from legacy_api.api.errors import RequestIdMiddleware, install_error_handlers
 from legacy_api.api.idempotency import IdempotencyStore
 from legacy_api.api.ratelimit import RateLimitMiddleware, TokenBucketLimiter
@@ -75,6 +77,7 @@ def create_app(
     settings: Settings | None = None,
     verifier: TokenVerifier | None = None,
     notifier: OwnerNotifier | None = None,
+    embedding_provider: EmbeddingProvider | None = None,
 ) -> FastAPI:
     settings = settings or get_settings()
 
@@ -100,6 +103,14 @@ def create_app(
     app.state.request_bucket = TokenBucketLimiter(per_minute=settings.rate_limit_per_minute)
     app.state.idempotency = IdempotencyStore(ttl_s=settings.idempotency_ttl_s)
     app.state.metrics = Metrics()
+    # Every provider call goes through the Model Router (ADR-06); the
+    # embedding task class is pinned by ADR-16. No key means embedding
+    # writes queue (RAG-08) rather than degrade.
+    if embedding_provider is None and settings.gemini_api_key:
+        embedding_provider = GeminiEmbeddingProvider(settings.gemini_api_key)
+    app.state.model_router = ModelRouter(
+        embedding_provider=embedding_provider, metrics=app.state.metrics
+    )
     app.state.storage = LocalObjectStorage(Path(settings.storage_dir))
     app.state.alerts = AlertRouter(
         notifier=app.state.notifier,

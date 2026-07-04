@@ -32,6 +32,13 @@ class Metrics:
             labelnames=("provider", "model", "direction"),
             registry=self.registry,
         )
+        # Searchable-lag signal (RAG-08): index attempts deferred because the
+        # embedding provider was unavailable; vector gaps are never silent.
+        self.embedding_deferred = Counter(
+            "legacy_embedding_deferred_total",
+            "Chunk index attempts deferred pending embedding availability",
+            registry=self.registry,
+        )
 
     def observe_request(
         self, method: str, route_group: str, status_code: int, duration_s: float
@@ -41,6 +48,9 @@ class Metrics:
 
     def record_tokens(self, provider: str, model: str, direction: str, count: int) -> None:
         self.tokens_spent.labels(provider, model, direction).inc(count)
+
+    def record_embedding_deferred(self) -> None:
+        self.embedding_deferred.inc()
 
     def render(self) -> bytes:
         return generate_latest(self.registry)

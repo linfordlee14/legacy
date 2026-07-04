@@ -17,6 +17,9 @@ This file is exempt from the 12-section specification structure per [SPEC_CONVEN
 
 ### Added
 
+- `architecture/MASTER_ARCHITECTURE.md` ADR-16: the platform embedding model is pinned to exactly `gemini-embedding-001` at `output_dimensionality` 1536 (version string `gemini-embedding-001:1536`, L2-normalized vectors, cosine distance), verified against the official Gemini API documentation on 2026-07-04. Resolves the AIA-09 `TODO(decision)` in `ai/AI_ARCHITECTURE.md` (now pointing at the ADR), narrows ADR-06's `TODO(verify)` to provider accounts, updates the RAG-06 parenthetical, and closes the matching open question. Model changes henceforth follow AIA-08/AIA-12 and require a new ADR.
+- `database/DATABASE_SCHEMA.md` §4.6 `EmbeddingChunk`: `heading_path`, `language`, and `injection_flag` columns. Defect: RAG-05 makes the chunk provenance packet normative (heading or symbol path, language, injection-flag status travel with every chunk) and RAG-24 requires heading-path citation locators, but the entity defined no columns to hold them.
+
 - `database/DATABASE_SCHEMA.md` §4.6: `Revision` system entity (SPEC_CONVENTIONS §6 entity list updated), and the §4.8 redaction rule now strikes Revision snapshots in the same transaction. Defect: API_SPECIFICATION §4.4 (`GET /v1/{collection}/{id}/revisions`), UI_UX (autosave revision history; soft delete with undo), and FEATURE_SPECIFICATIONS F11 (last-write-wins with revision history) all made revision history normative, but no storage entity existed; DATABASE_SCHEMA §5 requires a spec change before any new table.
 - `api/API_SPECIFICATION.md` §4.4: `POST /v1/{collection}/{id}/restore` (undo a soft delete while the row is retained per DATABASE_SCHEMA §4.8). Defect: soft delete with undo was normative (UI_UX destructive-action rules; NFR-022; MVP-015 acceptance) but the contract offered no undo surface.
 

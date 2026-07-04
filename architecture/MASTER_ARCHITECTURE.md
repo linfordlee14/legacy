@@ -213,7 +213,7 @@ ADR statuses: Proposed, Accepted, Superseded. All ADRs below are Accepted as v1 
 **Context.** MASTER_CONTEXT §5 records Anthropic Claude, Google Gemini, and Groq APIs in the owner's stack (🟡). Providers change pricing, models, and availability on timescales far shorter than this system's lifetime.
 **Decision.** All LLM and embedding calls pass through a Model Router: Claude is the primary provider for generation and twin voice; Gemini and Groq serve fallback and cost-optimized task classes. Routing policy is configuration, not code scattered across services.
 **Consequences.** Provider swap is a config change; budgets and token accounting are centralized; prompt portability constraints (provider-neutral prompt formats) must be honored by all agents.
-> TODO(verify): Confirm current provider accounts, model availability, and embedding model choice at implementation time (🟡).
+> TODO(verify): Confirm current provider accounts and model availability at implementation time (🟡). The embedding model choice is resolved: see ADR-16.
 
 #### ADR-07: MCP for tool integrations
 **Context.** Agents need tools (database operations, web research, future integrations). The owner's stack references Supabase MCP and Tavily MCP (MASTER_CONTEXT §5, 🟡). MCP is an open protocol with growing ecosystem support.
@@ -260,6 +260,11 @@ ADR statuses: Proposed, Accepted, Superseded. All ADRs below are Accepted as v1 
 **Context.** The owner has verified Android skills (Kotlin, Jetpack Compose, MASTER_CONTEXT §5 ✅), but a mobile client multiplies surface area without advancing the core promise (capture, preserve, retrieve, represent).
 **Decision.** No mobile client in v1. Mobile capture needs are met by the responsive Web App and by ingestion connectors. A native Android app is a named future enhancement.
 **Consequences.** Some capture friction on mobile accepted for now; the API-first rule (ADR-14) guarantees a future app needs no backend rework.
+
+#### ADR-16: Pinned embedding model, gemini-embedding-001 at 1536 dimensions
+**Context.** [AI_ARCHITECTURE](../ai/AI_ARCHITECTURE.md) AIA-09 left the embedding model an open decision balancing quality, cost per million tokens, dimension size, and decades-long availability, with AIA-10 requiring 1536 dimensions or fewer. ADR-06 already fixes the provider set (Anthropic, Google, Groq) behind the Model Router, and MVP-016 cannot ship chunk indexing without the choice. Verified against the official Gemini API documentation on 2026-07-04: `gemini-embedding-001` is Google's designated stable text embedding model (3072 dimensions by default, Matryoshka truncation with documented recommended sizes 768/1536/3072, 2048-token input limit per text, embeddings at non-default dimensions require client-side normalization); a newer multimodal `gemini-embedding-2` reached general availability but is the newest release, not the designated stable text model.
+**Decision.** The platform embedding model is pinned to exactly `gemini-embedding-001` with `output_dimensionality` 1536, vectors L2-normalized at write and query time, cosine distance, recorded on every chunk as embedding model version `gemini-embedding-001:1536`. Selection rationale: it stays inside the ADR-06 provider set (no vendor expansion); it is the stable designated model rather than the newest release, per the AIA-07 nothing-changes-silently rule; 1536 dimensions satisfies AIA-10 and halves pgvector index cost against the default; the corpus is text-only in this phase, so multimodal capability buys nothing yet. Per AIA-07 the identifier is pinned and immutable in a versioned routing configuration; no auto-tracking alias is ever used.
+**Consequences.** Embedding calls route exclusively through the Model Router's Gemini adapter with a `LEGACY_GEMINI_API_KEY` secret arriving via the environment (DEP-18). Chunk rows carry the version string, ANN indexes are scoped to it, and vectors from different versions are never compared (AIA-11). Migrating (including to `gemini-embedding-2`, the natural successor candidate) is a Gate G2 or later decision following AIA-12/RAG-28: dual index rebuilt from source artifacts, evaluation against the retrieval set, atomic switch, old index retained one backup cycle, recorded as a new ADR. Embeddings remain a rebuildable cache; source artifacts are the durable asset.
 
 ## 5. Acceptance Criteria
 
@@ -310,7 +315,7 @@ ADR statuses: Proposed, Accepted, Superseded. All ADRs below are Accepted as v1 
 
 - Should the ADR set split into `architecture/decisions/` one-file-per-ADR once it exceeds roughly fifteen entries (mirrors the SPEC_CONVENTIONS open question)?
 - Where exactly does the Agent Runtime execute in v1 deployment terms (same process as FastAPI, worker pool, or scheduled jobs)? Owned by [DEPLOYMENT](../deployment/DEPLOYMENT.md); this document only fixes its interfaces.
-- Which embedding model and dimension ship first? Deferred to [RAG_PIPELINE](../ai/RAG_PIPELINE.md) with ADR-06's confirmation TODO.
+- ~~Which embedding model and dimension ship first?~~ Resolved: ADR-16 pins `gemini-embedding-001` at 1536 dimensions.
 - Does the estate steward's activation mechanism require an offline legal artifact in addition to Grants with succession conditions? Owned by [SECURITY](../security/SECURITY.md).
 > TODO(verify): Resolve the 🟡 stack confirmations named in ADR-02, ADR-03, ADR-06, ADR-07 before roadmap build tasks begin.
 

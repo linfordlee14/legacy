@@ -1,7 +1,7 @@
 # Legacy implementation workspace. Spec anchors: deployment/DEPLOYMENT.md,
 # roadmap/BUILD_ORDER.md. Run `make install` once, then `make test`.
 
-.PHONY: install install-api install-web dev-api dev-web test test-api test-web build up down smoke spec-check lint audit ci seed
+.PHONY: install install-api install-web dev-api dev-web test test-api test-web build up down smoke spec-check lint audit ci seed seed-docs reindex
 
 install: install-api install-web
 
@@ -46,6 +46,12 @@ migrate:
 
 migrate-down:
 	cd services/api && LEGACY_DATABASE_URL=$${LEGACY_DATABASE_URL:-postgresql://legacy:legacy@localhost:5432/legacy_local} .venv/bin/alembic downgrade -1
+
+# Rebuild the chunk store from source rows (MVP-016; NFR-024 drill path).
+# Requires LEGACY_GEMINI_API_KEY (ADR-16). Safe to re-run: unchanged
+# entities are no-ops (RAG-03).
+reindex:
+	cd services/api && LEGACY_ENV=$${LEGACY_ENV:-local} LEGACY_DATABASE_URL=$${LEGACY_DATABASE_URL:-postgresql://legacy:legacy@localhost:5432/legacy_local} .venv/bin/python -m legacy_api.rag.reindex
 
 # Seed MASTER_CONTEXT.md as tiered Claims (BUILD_ORDER step 13; MVP-013).
 # Idempotent: re-running creates no duplicate claims, sources, or links.

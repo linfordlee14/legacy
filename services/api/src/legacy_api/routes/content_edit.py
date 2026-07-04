@@ -46,6 +46,7 @@ from legacy_api.policy import (
     tiers_within,
 )
 from legacy_api.provenance import provenance_for_entity
+from legacy_api.rag.indexer import index_entity_or_queue
 from legacy_api.routes.content import COLLECTIONS, serialize
 
 router = APIRouter(prefix="/v1", tags=["content"])
@@ -248,6 +249,24 @@ async def patch_content(
             await conn.execute(
                 f"UPDATE {spec['table']} SET {assignments} WHERE id = %(id)s",
                 {**fields, "id": item_id},
+            )
+        if is_tier_change:
+            # RAG-32: the denormalized chunk tier recomputes synchronously
+            # in the same transaction as the parent tier change.
+            await conn.execute(
+                "UPDATE embedding_chunk SET privacy_tier = %s "
+                "WHERE entity_type = %s AND entity_id = %s",
+                (fields["privacy_tier"], spec["entity_type"], item_id),
+            )
+        else:
+            # Text changed: supersede and re-embed (RAG-03); queued, never
+            # silent, when the embedding provider is unavailable (RAG-08).
+            await index_entity_or_queue(
+                conn,
+                request.app.state.model_router,
+                spec["entity_type"],
+                item_id,
+                metrics=request.app.state.metrics,
             )
         await write_audit_event(
             conn,
