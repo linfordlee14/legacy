@@ -1,10 +1,11 @@
-# Restore runbooks 1 and 2
+# Restore runbooks 1, 2, 3, and 5
 
-Implements the first two restore procedures of
+Implements the restore procedures of
 [`deployment/BACKUP_AND_RECOVERY.md`](../../deployment/BACKUP_AND_RECOVERY.md)
-§4.6 and the drill automation of §4.7 (MVP-009). Runbooks 3 to 5 (full
-disaster restore, vault-only access, post-restore verification at platform
-scale) arrive with the vault work (TASK-504, TASK-508).
+§4.6 and the drill automation of §4.7 (MVP-009 for runbooks 1-2; MVP-021
+for runbook 3 with runbook 5 verification built in). Runbook 4 (read-only
+corpus access from the vault alone) arrives with the vault work
+(TASK-504, TASK-508).
 
 **Never restore into production with these tools.** Restores target scratch
 or freshly created databases; promoting a verified restore is a deliberate,
@@ -14,9 +15,10 @@ separate action.
 
 | Script | Purpose |
 |--------|---------|
-| `scripts/backup/backup.sh` | Encrypted full backup with manifest (checksums, per-table row counts, schema version) |
-| `scripts/backup/restore.sh` | Decrypt, verify checksum, restore into a target database |
+| `scripts/backup/backup.sh` | Encrypted full backup with manifest (checksums, per-table row counts, schema version, audit sequence); includes the object storage tree when `LEGACY_BACKUP_STORAGE_DIR` is set (coverage table §4.2) |
+| `scripts/backup/restore.sh` | Decrypt, verify checksums, restore the database and (with `LEGACY_RESTORE_STORAGE_DIR`) the object storage tree |
 | `scripts/backup/restore_drill.sh` | Runbook 2 automation: backup, restore to scratch, verify counts and schema |
+| `scripts/backup/full_restore_drill.sh` | Runbook 3 automation (`make full-restore-drill`): database plus storage onto fresh scratch, configuration and index checks, runbook 5 verification (row counts, audit continuity, sampled byte-identical reads), API boot and smoke test, RTO gate |
 
 Key model (§4.4, DEP-22): backups are hybrid-encrypted. The RSA public key
 lives in the backup environment; the private key is owner-held with escrow

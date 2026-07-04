@@ -1,7 +1,7 @@
 # Legacy implementation workspace. Spec anchors: deployment/DEPLOYMENT.md,
 # roadmap/BUILD_ORDER.md. Run `make install` once, then `make test`.
 
-.PHONY: install install-api install-web dev-api dev-web test test-api test-web build up down smoke spec-check lint audit ci seed seed-docs reindex perf-baseline
+.PHONY: install install-api install-web dev-api dev-web test test-api test-web build up down smoke spec-check lint audit ci seed seed-docs reindex perf-baseline full-restore-drill security-retest
 
 install: install-api install-web
 
@@ -78,6 +78,19 @@ backup:
 # Runbook 2 drill: backup, restore to scratch, verify (BACKUP_AND_RECOVERY 4.7).
 restore-drill:
 	./scripts/backup/restore_drill.sh
+
+# Runbook 3 drill: full platform restore onto fresh scratch infrastructure,
+# database plus object storage, with runbook 5 verification (MVP-021).
+full-restore-drill:
+	./scripts/backup/full_restore_drill.sh
+
+# Security re-test of the auth and tier paths (MVP-021; SEC-37): the
+# authorization regression suites, leak suites included, in one gate.
+security-retest:
+	cd services/api && LEGACY_ENV=local .venv/bin/python -m pytest -q \
+		tests/test_auth.py tests/test_auth_unit.py tests/test_authorization.py \
+		tests/test_policy_unit.py tests/test_pats.py tests/test_content.py \
+		tests/test_content_edit.py tests/test_search_api.py tests/test_verification.py
 
 # Record the MVP-019 performance baseline (NFR 4.1) against a DISPOSABLE
 # database; results belong in infra/PERFORMANCE_BASELINE.md.

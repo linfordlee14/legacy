@@ -34,4 +34,26 @@ fi
 echo "restore: checksum verified"
 
 pg_restore --no-owner --dbname="${TARGET_URL}" "${WORK}/dump.pgcustom"
+
+# Object storage tree (runbook 3): restored when the backup carries one and
+# a target directory is given; skipping is loud, never silent.
+if [ -f "${BACKUP_DIR}/storage.enc" ]; then
+  if [ -n "${LEGACY_RESTORE_STORAGE_DIR:-}" ]; then
+    echo "restore: decrypting object storage"
+    openssl enc -d -aes-256-cbc -pbkdf2 -iter 200000 \
+      -in "${BACKUP_DIR}/storage.enc" -out "${WORK}/storage.tar" \
+      -pass "file:${WORK}/data.key"
+    EXPECTED_STORAGE_SHA="$(python3 -c "import json;print((json.load(open('${BACKUP_DIR}/manifest.json'))['storage'] or {}).get('sha256',''))")"
+    ACTUAL_STORAGE_SHA="$(sha256sum "${WORK}/storage.tar" | cut -d' ' -f1)"
+    if [ "${EXPECTED_STORAGE_SHA}" != "${ACTUAL_STORAGE_SHA}" ]; then
+      echo "event=restore outcome=fail reason=storage_checksum_mismatch" >&2
+      exit 1
+    fi
+    mkdir -p "${LEGACY_RESTORE_STORAGE_DIR}"
+    tar -C "${LEGACY_RESTORE_STORAGE_DIR}" -xf "${WORK}/storage.tar"
+    echo "restore: object storage restored to ${LEGACY_RESTORE_STORAGE_DIR}"
+  else
+    echo "restore: WARNING backup carries object storage but LEGACY_RESTORE_STORAGE_DIR is unset; storage NOT restored" >&2
+  fi
+fi
 echo "event=restore outcome=ok backup_dir=${BACKUP_DIR}"

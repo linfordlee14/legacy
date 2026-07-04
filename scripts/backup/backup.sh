@@ -41,11 +41,33 @@ ROW_COUNTS="$(psql "${LEGACY_BACKUP_DATABASE_URL}" -Atc "
   ) s;")"
 SCHEMA_VERSION="$(psql "${LEGACY_BACKUP_DATABASE_URL}" -Atc \
   "SELECT version_num FROM alembic_version" 2>/dev/null || echo "none")"
+AUDIT_LAST_SEQ="$(psql "${LEGACY_BACKUP_DATABASE_URL}" -Atc \
+  "SELECT COALESCE(MAX(sequence_number), 0) FROM audit_log_entry" 2>/dev/null || echo 0)"
+
+# Object storage tree (coverage table 4.2: originals are backed up).
+# Optional so database-only invocations keep working, but its absence is
+# loud, never silent.
+STORAGE_SHA=""
+STORAGE_BYTES=0
+STORAGE_FILES=0
+if [ -n "${LEGACY_BACKUP_STORAGE_DIR:-}" ] && [ -d "${LEGACY_BACKUP_STORAGE_DIR}" ]; then
+  echo "backup: archiving object storage"
+  tar -C "${LEGACY_BACKUP_STORAGE_DIR}" -cf "${WORK}/storage.tar" .
+  STORAGE_SHA="$(sha256sum "${WORK}/storage.tar" | cut -d' ' -f1)"
+  STORAGE_BYTES="$(stat -c%s "${WORK}/storage.tar")"
+  STORAGE_FILES="$(find "${LEGACY_BACKUP_STORAGE_DIR}" -type f | wc -l | tr -d ' ')"
+else
+  echo "backup: WARNING object storage NOT included; set LEGACY_BACKUP_STORAGE_DIR (BACKUP_AND_RECOVERY 4.2)" >&2
+fi
 
 echo "backup: encrypting"
 openssl rand -out "${WORK}/data.key" 64
 openssl enc -aes-256-cbc -pbkdf2 -iter 200000 -salt \
   -in "${WORK}/dump.pgcustom" -out "${OUT}/dump.enc" -pass "file:${WORK}/data.key"
+if [ -n "${STORAGE_SHA}" ]; then
+  openssl enc -aes-256-cbc -pbkdf2 -iter 200000 -salt \
+    -in "${WORK}/storage.tar" -out "${OUT}/storage.enc" -pass "file:${WORK}/data.key"
+fi
 openssl pkeyutl -encrypt -pubin -inkey "${LEGACY_BACKUP_PUBLIC_KEY_FILE}" \
   -pkeyopt rsa_padding_mode:oaep -pkeyopt rsa_oaep_md:sha256 \
   -in "${WORK}/data.key" -out "${OUT}/data.key.enc"
@@ -56,6 +78,7 @@ KEY_FINGERPRINT="$(openssl pkey -pubin -in "${LEGACY_BACKUP_PUBLIC_KEY_FILE}" \
 
 python3 - "$OUT" <<PY
 import json, sys
+storage_sha = "${STORAGE_SHA}"
 manifest = {
     "created_at": "${STAMP}",
     "format": "pg_dump custom, aes-256-cbc pbkdf2, rsa-oaep data key",
@@ -64,7 +87,13 @@ manifest = {
     "ciphertext_sha256": "${CIPHERTEXT_SHA}",
     "public_key_fingerprint": "${KEY_FINGERPRINT}",
     "schema_version": "${SCHEMA_VERSION}",
+    "audit_last_sequence": int("${AUDIT_LAST_SEQ}" or 0),
     "row_counts": json.loads('''${ROW_COUNTS}'''),
+    "storage": (
+        {"sha256": storage_sha, "bytes": ${STORAGE_BYTES},
+         "file_count": ${STORAGE_FILES}}
+        if storage_sha else None
+    ),
 }
 with open(sys.argv[1] + "/manifest.json", "w") as f:
     json.dump(manifest, f, indent=2, sort_keys=True)
