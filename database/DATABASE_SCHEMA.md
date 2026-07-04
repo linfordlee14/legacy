@@ -452,7 +452,7 @@ Storage for the revision history mandated by [API_SPECIFICATION](../api/API_SPEC
 | entity_id | identifier | yes | The revised row |
 | row_version | integer | yes | The version number this revision preserves (the row's row_version before the change displaced it) |
 | change_kind | enum (update, tier_change) | yes | What displaced this version; expansion is additive per §4.8 |
-| snapshot | JSON document | yes | The content-bearing columns exactly as they were before the change; the shape per entity is the editable-field set documented in API_SPECIFICATION §4.4 plus privacy_tier |
+| snapshot | JSON document | yes | The content-bearing columns exactly as they were before the change; the shape per entity is the editable-field set documented in API_SPECIFICATION §4.4 plus privacy_tier. For Claim tier resolutions the snapshot is the tier fields (confidence_tier, tier_rationale, verified_at, verified_by) plus privacy_tier |
 
 Base-field exceptions per §4.2: no updated_at, deleted_at, privacy_tier, origin fields, or row_version; a revision is an immutable point-in-time record whose created_by is the editor whose change displaced the preserved version. Keys: unique per (entity_type, entity_id, row_version). Rules in words: revisions accept no updates and no deletes except through the redaction workflow, enforced by a database guard the redaction path explicitly authorizes (the claim tier guard mechanism); access is owner-only at the service layer because snapshots carry full content; soft-deleting or restoring a row writes no revision (the row itself is preserved) but is audited.
 

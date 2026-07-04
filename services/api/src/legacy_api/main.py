@@ -40,6 +40,7 @@ from legacy_api.routes.content_edit import router as content_edit_router
 from legacy_api.routes.ingestion import router as ingestion_router
 from legacy_api.routes.search import router as search_router
 from legacy_api.routes.tokens import router as tokens_router
+from legacy_api.routes.verification import router as verification_router
 from legacy_api.storage import LocalObjectStorage
 from legacy_api.verifier import TokenVerifier, jwks_key_provider
 
@@ -130,6 +131,7 @@ def create_app(
     app.include_router(tokens_router)
     app.include_router(ingestion_router)
     app.include_router(search_router)
+    app.include_router(verification_router)
     # Path-parameterized collections register last so specific routes win.
     app.include_router(content_router)
     app.include_router(content_edit_router)

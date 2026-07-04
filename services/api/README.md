@@ -4,13 +4,30 @@ The Legacy platform API service (FastAPI). Governing specifications:
 `architecture/MASTER_ARCHITECTURE.md`, `api/API_SPECIFICATION.md`,
 `deployment/DEPLOYMENT.md`.
 
-Current scope (BUILD_ORDER steps 1-10 and 13-17): service skeleton,
+Current scope (BUILD_ORDER steps 1-10 and 13-17, 20): service skeleton,
 health endpoints, the full schema migration, authentication with PATs, the
 authorization core, the `/v1` conventions layer with the claims resource,
 the observability baseline, the ingestion pipeline for documents and
 notes, the MASTER_CONTEXT seed import, the owner document batch import,
 revision history with soft delete and undo, and the chunk store with
 embeddings and lexical indexing.
+
+## Verification queue (MVP-020; FS-009; API_SPECIFICATION 4.4)
+
+`GET /v1/verification/queue` lists open flagged claims and self-reported
+claims past their review date, with their evidence, owner-only.
+`POST .../claims/{id}/evidence` attaches an evidence Source (supports or
+contradicts; links are only ever added, never removed).
+`POST .../claims/{id}/resolve` is the single tier-movement path: owner
+only, step-up required, authorized through the policy service
+(TIER_CHANGE, sensitive-audited), and executed against the
+claim_tier_guard trigger on its own terms: the transaction-local
+authorization assertion happens only here, and the guard still refuses
+'verified' without a human verifier and a supporting ClaimSource (the
+refusal surfaces as a 409 with the guard's reason). The displaced tier
+state lands in revision history; every attachment and resolution writes
+audit entries; there is no agent automation and no automatic
+verification anywhere.
 
 ## Search (MVP-017; API_SPECIFICATION 4.4; FS-004; NFR-035)
 

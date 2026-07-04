@@ -437,3 +437,38 @@ section {
   border: 1px dashed var(--text-secondary);
   border-radius: 8px;
 }
+
+/* Verification queue (MVP-020; UI_UX 4.3) */
+
+.queue-list {
+  list-style: none;
+  padding: 0;
+  display: grid;
+  gap: var(--space-3);
+}
+
+.queue-item article {
+  border: 1px solid var(--surface-raised);
+  border-radius: 8px;
+  padding: var(--space-2);
+}
+
+.queue-item .statement {
+  margin: var(--space-1) 0;
+}
+
+.evidence-list {
+  list-style: none;
+  padding: 0 0 0 var(--space-2);
+  border-left: 2px solid var(--surface-raised);
+}
+
+.evidence-form,
+.resolve-form {
+  display: grid;
+  gap: var(--space-2);
+  border: 1px dashed var(--text-secondary);
+  border-radius: 8px;
+  padding: var(--space-2);
+  margin-top: var(--space-2);
+}

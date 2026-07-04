@@ -11,7 +11,14 @@ describe("WorkspaceNav (UI_UX 4.1 and 4.2)", () => {
     mockPathname.mockReturnValue("/dashboard");
     render(<WorkspaceNav />);
     const nav = screen.getByRole("navigation", { name: "Workspace" });
-    for (const label of ["Dashboard", "Capture inbox", "Library", "Search", "Settings"]) {
+    for (const label of [
+      "Dashboard",
+      "Capture inbox",
+      "Library",
+      "Search",
+      "Verification queue",
+      "Settings",
+    ]) {
       expect(screen.getByRole("link", { name: label })).toBeInTheDocument();
     }
     expect(nav).toBeInTheDocument();

@@ -139,8 +139,9 @@ Example `/v1/ask` final payload (after streaming):
 | `GET /v1/agents/runs` and `/{id}` | Inspect runs: steps, tools, tokens, costs | Owner |
 | `POST /v1/agents/runs/{id}/approvals/{step}` | Approve or reject a gated step | Owner |
 | `GET /v1/verification/queue` | Open 🔴 and stale 🟡 claims | Owner |
+| `POST /v1/verification/claims/{id}/evidence` | Owner attaches an evidence Source to a claim (supports or contradicts); audit-logged | Owner |
 | `POST /v1/verification/claims/{id}/proposals` | Verification Agent files evidence and a tier-change proposal | Agent (Verification) |
-| `POST /v1/verification/claims/{id}/resolve` | Owner applies or rejects a tier change; audit-logged | Owner |
+| `POST /v1/verification/claims/{id}/resolve` | Owner applies or rejects a tier change; step-up required; audit-logged | Owner |
 
 #### Publishing, vault, admin
 
