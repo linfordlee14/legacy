@@ -4,13 +4,35 @@ The Legacy platform API service (FastAPI). Governing specifications:
 `architecture/MASTER_ARCHITECTURE.md`, `api/API_SPECIFICATION.md`,
 `deployment/DEPLOYMENT.md`.
 
-Current scope (BUILD_ORDER steps 1-10 and 13-16): service skeleton,
+Current scope (BUILD_ORDER steps 1-10 and 13-17): service skeleton,
 health endpoints, the full schema migration, authentication with PATs, the
 authorization core, the `/v1` conventions layer with the claims resource,
 the observability baseline, the ingestion pipeline for documents and
 notes, the MASTER_CONTEXT seed import, the owner document batch import,
 revision history with soft delete and undo, and the chunk store with
 embeddings and lexical indexing.
+
+## Search (MVP-017; API_SPECIFICATION 4.4; FS-004; NFR-035)
+
+`GET /v1/search?q=...&mode=hybrid|lexical|semantic&limit=` serves ranked
+retrieval over the chunk store for any caller, ceiling-filtered: the
+privacy-tier predicate executes inside the datastore query before ranking
+or response assembly (NFR-035), trusted callers get per-row grant-scope
+refinement, and counts reflect only at-or-below-ceiling content, so
+existence above the ceiling never leaks, not even as a number. Hybrid
+fuses the independently retrieved lexical and semantic lists by
+reciprocal rank fusion (ADR-17; k and pool sizes are configuration);
+lexical uses full-text search with stemming and exact-phrase support
+(bare multi-word queries are OR-joined for recall, ranked by match
+density). Results carry title, snippet, heading-path locator, privacy
+tier, mode-specific score, and the provenance block. Semantic and hybrid
+degrade to lexical-only with an explicit `degraded: true` flag when the
+query cannot be embedded (never silently); overlong queries truncate
+with notice; zero lexical matches return an empty list, never an
+invention. The golden query set (`tests/golden/search_golden.json`, v1)
+records the regression baseline: lexical recall@10 of 1.00 on the
+repository corpus, lexical p95 well inside NFR-001, hybrid store-path
+p95 well inside NFR-002 (with-provider latency lands at provisioning).
 
 ## Chunking, embeddings, and indexes (MVP-016; RAG_PIPELINE 4.2-4.4; ADR-16)
 

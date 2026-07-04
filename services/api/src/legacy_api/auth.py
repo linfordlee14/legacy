@@ -136,9 +136,12 @@ async def authenticate(request: Request) -> Principal:
     request_id = request.headers.get("x-request-id")
 
     async with pool.connection() as conn:
-        conn.row_factory = dict_row
+        # Per-cursor row factory only: the pool does not reset connection
+        # state on return, so a connection-level factory would leak into
+        # whichever request borrows this connection next.
+        cur = conn.cursor(row_factory=dict_row)
         row = await (
-            await conn.execute(
+            await cur.execute(
                 """
                 SELECT id, email, display_name, user_kind, account_status, is_owner
                 FROM app_user
@@ -180,7 +183,7 @@ async def authenticate(request: Request) -> Principal:
         user_id = str(row["id"])
 
         seen_session = await (
-            await conn.execute(
+            await cur.execute(
                 """
                 SELECT EXISTS (
                     SELECT 1 FROM audit_log_entry
@@ -193,7 +196,7 @@ async def authenticate(request: Request) -> Principal:
         new_device = False
         if not seen_session or not seen_session["exists"]:
             known_device = await (
-                await conn.execute(
+                await cur.execute(
                     """
                     SELECT EXISTS (
                         SELECT 1 FROM audit_log_entry

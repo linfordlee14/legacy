@@ -17,6 +17,7 @@ This file is exempt from the 12-section specification structure per [SPEC_CONVEN
 
 ### Added
 
+- `architecture/MASTER_ARCHITECTURE.md` ADR-17: hybrid retrieval fuses by reciprocal rank fusion (k = 60 default, k and pool sizes configuration-defined; lexical and semantic retrieval stay independent before fusion). Resolves the fusion `TODO(decision)` in `ai/RAG_PIPELINE.md` §10; weighted score fusion is re-evaluated at a gate review if the retrieval label set grows enough to calibrate score normalization.
 - `architecture/MASTER_ARCHITECTURE.md` ADR-16: the platform embedding model is pinned to exactly `gemini-embedding-001` at `output_dimensionality` 1536 (version string `gemini-embedding-001:1536`, L2-normalized vectors, cosine distance), verified against the official Gemini API documentation on 2026-07-04. Resolves the AIA-09 `TODO(decision)` in `ai/AI_ARCHITECTURE.md` (now pointing at the ADR), narrows ADR-06's `TODO(verify)` to provider accounts, updates the RAG-06 parenthetical, and closes the matching open question. Model changes henceforth follow AIA-08/AIA-12 and require a new ADR.
 - `database/DATABASE_SCHEMA.md` §4.6 `EmbeddingChunk`: `heading_path`, `language`, and `injection_flag` columns. Defect: RAG-05 makes the chunk provenance packet normative (heading or symbol path, language, injection-flag status travel with every chunk) and RAG-24 requires heading-path citation locators, but the entity defined no columns to hold them.
 

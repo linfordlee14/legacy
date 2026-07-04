@@ -1,0 +1,56 @@
+{
+  "description": "Golden query set v1 (MVP-017; RAG-27; FS-004 metrics). Queries over the repository seed corpus (Phase 1 exit criterion 5); each expects at least one of the listed documents in the top k. Grows with the corpus per RAG-27; recall on this set is the regression baseline.",
+  "version": 1,
+  "k": 10,
+  "corpus_dirs": ["knowledge", "ai", "api", "database", "security", "deployment"],
+  "queries": [
+    {
+      "query": "reciprocal rank fusion hybrid retrieval",
+      "expect_any": ["ai/RAG_PIPELINE.md"]
+    },
+    {
+      "query": "confidence tier never upgraded automatically",
+      "expect_any": ["knowledge/MASTER_CONTEXT.md", "database/DATABASE_SCHEMA.md"]
+    },
+    {
+      "query": "backup encryption escrowed private key",
+      "expect_any": ["deployment/BACKUP_AND_RECOVERY.md"]
+    },
+    {
+      "query": "personal access token scopes expiry revocation",
+      "expect_any": ["security/AUTHENTICATION.md", "api/API_SPECIFICATION.md"]
+    },
+    {
+      "query": "deny by default privacy tier ceiling grants",
+      "expect_any": ["security/AUTHORIZATION.md"]
+    },
+    {
+      "query": "pgvector embedding chunk model version",
+      "expect_any": ["database/DATABASE_SCHEMA.md", "ai/AI_ARCHITECTURE.md"]
+    },
+    {
+      "query": "verification queue flagged claims evidence",
+      "expect_any": ["knowledge/MASTER_CONTEXT.md", "security/PRIVACY.md"]
+    },
+    {
+      "query": "digital twin disclosure banner AI",
+      "expect_any": ["ai/DIGITAL_TWIN.md"]
+    },
+    {
+      "query": "quiet hours severity alert routing",
+      "expect_any": ["deployment/OBSERVABILITY.md"]
+    },
+    {
+      "query": "idempotency key replay mutating requests",
+      "expect_any": ["api/API_SPECIFICATION.md"]
+    },
+    {
+      "query": "soft delete undo retention window",
+      "expect_any": ["database/DATABASE_SCHEMA.md"]
+    },
+    {
+      "query": "prompt injection untrusted data delimiters",
+      "expect_any": ["security/SECURITY.md", "ai/AI_ARCHITECTURE.md", "ai/RAG_PIPELINE.md"]
+    }
+  ]
+}
