@@ -52,6 +52,15 @@ migrate-down:
 seed:
 	cd services/api && LEGACY_ENV=$${LEGACY_ENV:-local} LEGACY_DATABASE_URL=$${LEGACY_DATABASE_URL:-postgresql://legacy:legacy@localhost:5432/legacy_local} .venv/bin/python -m legacy_api.seed
 
+# Batch-import owner documents through the ingestion pipeline (step 14; MVP-014).
+# Usage: make seed-docs DOCS="path/to/folder" [TIER=P2] [EXT=".md,.txt,.pdf"]
+# Idempotent: re-running dedups by checksum; originals preserved unmodified.
+# DOCS paths are relative to the repository root; the storage directory must
+# be the one the API service uses (dev-api runs with services/api/storage).
+seed-docs:
+	@test -n "$(DOCS)" || { echo "DOCS is required: make seed-docs DOCS=path/to/folder"; exit 2; }
+	LEGACY_ENV=$${LEGACY_ENV:-local} LEGACY_DATABASE_URL=$${LEGACY_DATABASE_URL:-postgresql://legacy:legacy@localhost:5432/legacy_local} LEGACY_STORAGE_DIR=$${LEGACY_STORAGE_DIR:-services/api/storage} services/api/.venv/bin/python -m legacy_api.seed.documents $(DOCS) $(if $(TIER),--tier $(TIER)) $(if $(EXT),--ext $(EXT))
+
 # Proves the alert pipeline end to end (OBSERVABILITY 4.5; step 7 acceptance).
 test-alert:
 	cd services/api && LEGACY_ENV=local .venv/bin/python -m legacy_api.obs.alerts

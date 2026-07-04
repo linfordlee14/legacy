@@ -1,1 +1,1 @@
-"""Seed import: knowledge/MASTER_CONTEXT.md as tiered Claims (MVP-013)."""
+"""Seed imports: MASTER_CONTEXT claims (MVP-013), owner documents (MVP-014)."""

@@ -4,11 +4,26 @@ The Legacy platform API service (FastAPI). Governing specifications:
 `architecture/MASTER_ARCHITECTURE.md`, `api/API_SPECIFICATION.md`,
 `deployment/DEPLOYMENT.md`.
 
-Current scope (BUILD_ORDER steps 1-10 and 13): service skeleton, health
-endpoints, the full schema migration, authentication with PATs, the
+Current scope (BUILD_ORDER steps 1-10, 13, and 14): service skeleton,
+health endpoints, the full schema migration, authentication with PATs, the
 authorization core, the `/v1` conventions layer with the claims resource,
 the observability baseline, the ingestion pipeline for documents and
-notes, and the MASTER_CONTEXT seed import.
+notes, the MASTER_CONTEXT seed import, and the owner document batch
+import.
+
+## Owner document batch (MVP-014; roadmap Phase 1 exit criterion 5)
+
+`make seed-docs DOCS="path/to/folder" [TIER=P0-P3] [EXT=".md,.txt,.pdf"]`
+(or `python -m legacy_api.seed.documents`) walks the given files and
+directories and runs them through the ingestion pipeline: originals stored
+content-addressed before parsing, extraction into `canonical_markdown` for
+Markdown, text, and PDF, checksum dedup, review flags for failures (the
+CLI exits 1 while items need review, and prints their names), and
+ingestion provenance plus the P2 default tier on every row. Re-running a
+batch is idempotent: existing content dedups to the existing Artifact
+rows, while each run is still recorded as its own IngestionJob and audit
+entry. DOCS paths are relative to the repository root; the storage
+directory must be the same one the API serves from.
 
 ## Seed import (MVP-013; DATABASE_SCHEMA 4.4)
 
