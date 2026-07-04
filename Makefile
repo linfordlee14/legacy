@@ -1,7 +1,7 @@
 # Legacy implementation workspace. Spec anchors: deployment/DEPLOYMENT.md,
 # roadmap/BUILD_ORDER.md. Run `make install` once, then `make test`.
 
-.PHONY: install install-api install-web dev-api dev-web test test-api test-web build up down smoke spec-check lint audit ci
+.PHONY: install install-api install-web dev-api dev-web test test-api test-web build up down smoke spec-check lint audit ci seed
 
 install: install-api install-web
 
@@ -46,6 +46,11 @@ migrate:
 
 migrate-down:
 	cd services/api && LEGACY_DATABASE_URL=$${LEGACY_DATABASE_URL:-postgresql://legacy:legacy@localhost:5432/legacy_local} .venv/bin/alembic downgrade -1
+
+# Seed MASTER_CONTEXT.md as tiered Claims (BUILD_ORDER step 13; MVP-013).
+# Idempotent: re-running creates no duplicate claims, sources, or links.
+seed:
+	cd services/api && LEGACY_ENV=$${LEGACY_ENV:-local} LEGACY_DATABASE_URL=$${LEGACY_DATABASE_URL:-postgresql://legacy:legacy@localhost:5432/legacy_local} .venv/bin/python -m legacy_api.seed
 
 # Proves the alert pipeline end to end (OBSERVABILITY 4.5; step 7 acceptance).
 test-alert:

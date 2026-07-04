@@ -47,6 +47,8 @@ select = ["E", "F", "I", "UP", "B"]
 [tool.ruff.lint.per-file-ignores]
 # Embedded SQL reads better unwrapped.
 "migrations/**" = ["E501"]
+# Transcribed claim statements read better as one line per statement.
+"src/legacy_api/seed/master_context_data.py" = ["E501"]
 
 [tool.mypy]
 strict = true

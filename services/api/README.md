@@ -4,10 +4,25 @@ The Legacy platform API service (FastAPI). Governing specifications:
 `architecture/MASTER_ARCHITECTURE.md`, `api/API_SPECIFICATION.md`,
 `deployment/DEPLOYMENT.md`.
 
-Current scope (BUILD_ORDER steps 1-10): service skeleton, health endpoints,
-the full schema migration, authentication with PATs, the authorization
-core, the `/v1` conventions layer with the claims resource, the
-observability baseline, and the ingestion pipeline for documents and notes.
+Current scope (BUILD_ORDER steps 1-10 and 13): service skeleton, health
+endpoints, the full schema migration, authentication with PATs, the
+authorization core, the `/v1` conventions layer with the claims resource,
+the observability baseline, the ingestion pipeline for documents and
+notes, and the MASTER_CONTEXT seed import.
+
+## Seed import (MVP-013; DATABASE_SCHEMA 4.4)
+
+`make seed` (or `python -m legacy_api.seed`) imports the curated
+transcription of `knowledge/MASTER_CONTEXT.md` (`seed/master_context_data.py`)
+as Claim rows at their exact confidence tiers, with Source stubs and
+ClaimSource links (the document mentions every claim; verified claims cite
+their platform source, URLs pending TASK-001), attributed to the owner
+Person and the section 6 Projects. The import is idempotent: claims,
+sources, projects, and links are find-or-create, and an existing claim's
+tier is never touched (tier changes belong solely to the owner-verified
+path). Every run is recorded as an IngestionJob plus an audit entry, and
+the six section 12 verification items land as exactly six flagged claims
+ready for the MVP-020 queue.
 
 ## Ingestion (FS-001 slice; FR-ING-001, 007, 008)
 
